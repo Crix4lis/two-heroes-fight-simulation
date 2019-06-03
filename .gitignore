@@ -1,0 +1,7 @@
+/log/
+/.idea/
+
+
+/vendor/
+.phpunit.result.cache
+dump.txt

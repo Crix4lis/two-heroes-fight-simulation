@@ -1,0 +1,31 @@
+{
+    "name": "emagia/hero",
+    "description": "Hero Orderus Emag task",
+    "authors": [
+        {
+            "name": "Michał Powała",
+            "email": "powala.michal.4@gmail.com"
+        }
+    ],
+    "config": {
+        "sort-packages": true
+    },
+    "require": {
+        "php": "^7.1",
+        "myclabs/php-enum": "^1.7",
+        "webmozart/assert": "^1.4"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^8"
+    },
+    "autoload": {
+        "psr-4": {
+            "Emagia\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Test\\Emagia\\": "tests/"
+        }
+    }
+}
