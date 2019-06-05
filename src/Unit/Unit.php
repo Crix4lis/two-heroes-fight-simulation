@@ -75,4 +75,9 @@ class Unit implements UnitInterface
     {
         return $this->defence;
     }
+
+    public function isAlive(): bool
+    {
+        return $this->healthPoints->getPoints() > 0;
+    }
 }

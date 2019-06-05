@@ -15,4 +15,5 @@ interface UnitInterface
     public function getCurrentHealth(): HealthPoints;
     public function receiveDamage(HealthPoints $receiveDamage): void;
     public function getDefense(): Defence;
+    public function isAlive(): bool;
 }

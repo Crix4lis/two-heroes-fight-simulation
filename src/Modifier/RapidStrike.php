@@ -67,4 +67,9 @@ class RapidStrike implements UnitInterface
     {
         return $this->unit->getDefense();
     }
+
+    public function isAlive(): bool
+    {
+        return $this->unit->isAlive();
+    }
 }
