@@ -11,8 +11,8 @@ class Defence implements PropertyPointsInterface
 
     public function __construct(int $defence)
     {
-        Assert::greaterThanEq($defence, 45);
-        Assert::lessThanEq($defence, 90);
+        Assert::greaterThanEq($defence, 40);
+        Assert::lessThanEq($defence, 60);
 
         $this->defence = $defence;
     }
