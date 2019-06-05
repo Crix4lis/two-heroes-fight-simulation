@@ -18,6 +18,21 @@ class GamePlayService
     /** @var AttackerResolver */
     private $attackResolver;
 
+    /**
+     * @param TurnService $turn
+     * @param UnitFactory $unitFactory
+     * @param AttackerResolver $attackResolver
+     */
+    public function __construct(
+        TurnService $turn,
+        UnitFactory $unitFactory,
+        AttackerResolver $attackResolver
+    ) {
+        $this->turn = $turn;
+        $this->unitFactory = $unitFactory;
+        $this->attackResolver = $attackResolver;
+    }
+
     public function startBattle(): void
     {
         $turnNo = 1;
@@ -29,6 +44,7 @@ class GamePlayService
 
         while ($this->keepFighting($firstAttacker, $firstDefender, $turnNo)) {
             $this->makeTurn($firstAttacker, $firstDefender, $turnNo);
+            $turnNo++;
         }
     }
 
@@ -39,7 +55,7 @@ class GamePlayService
 
     private function makeTurn(UnitInterface $firstAttacker, UnitInterface $firstDefender, int $turn): void
     {
-        if ($turn % 2 === 0) {
+        if ($turn % 2 !== 0) { //because iteration starts with 1 not 0, first attack should be made when 1 % 2 = 1
             $this->turn->make($firstAttacker, $firstDefender);
             return;
         }
@@ -49,6 +65,6 @@ class GamePlayService
 
     private function getDefender(UnitInterface $u1, UnitInterface $u2, UnitInterface $attacker): UnitInterface
     {
-        return $u1->isTheSameInstance($attacker) ? $u1: $u2;
+        return $u1->isTheSameInstance($attacker) ? $u2 : $u1;
     }
 }
