@@ -57,9 +57,8 @@ class RapidStrikeTest extends TestCase
         //def: 45 - 90
         return [// hpa; att;hpd; def;left
             'def less than attack' => [100, 60, 100, 50, 80],
-            'def greater than attack' => [100, 60, 100, 61, 100],
             'kills with second attack' => [100, 90, 50, 50, 0],
-            'kills with first attack' => [100, 90, 20, 70, 0],
+            'kills with first attack' => [100, 90, 20, 60, 0],
             'already dead' => [100, 90, 0, 50, 0],
         ];
     }
@@ -70,9 +69,8 @@ class RapidStrikeTest extends TestCase
         //def: 45 - 90
         return [// hpa; att;hpd; def;left
             'def less than attack' => [100, 60, 100, 50, 90],
-            'def greater than attack' => [100, 60, 100, 61, 100],
             'would kill with second attack' => [100, 90, 50, 50, 10],
-            'kills with first attack' => [100, 90, 20, 70, 0],
+            'kills with first attack' => [100, 90, 20, 60, 0],
             'already dead' => [100, 90, 0, 50, 0],
         ];
     }

@@ -12,17 +12,17 @@ class DefenceTest extends TestCase
     public function validDefencePointsProvider(): array
     {
         return [
-            'with top-most posiible value' => [90],
-            'with lowest possible value' => [45],
-            'in beetween value' => [85],
+            'with top-most posiible value' => [60],
+            'with lowest possible value' => [40],
+            'in beetween value' => [50],
         ];
     }
 
     public function invalidDefencePointsProvider(): array
     {
         return [
-            'with too big value' => [91],
-            'with too small value' => [44],
+            'with too big value' => [61],
+            'with too small value' => [39],
         ];
     }
 

@@ -56,7 +56,6 @@ class MagicShieldTest extends TestCase
         //def: 45 - 90
         return [// hpa; att;hpd; def;left
             'def less than attack' => [100, 90, 100, 50, 80],
-            'def greater than attack' => [100, 60, 100, 61, 100],
             'kills' => [100, 90, 20, 50, 0],
             'would kill without shield' => [100, 90, 30, 45, 7],
             'already dead' => [100, 90, 0, 50, 0],
@@ -69,7 +68,6 @@ class MagicShieldTest extends TestCase
         //def: 45 - 90
         return [// hpa; att;hpd; def;left
             'def less than attack' => [100, 90, 100, 50, 60],
-            'def greater than attack' => [100, 60, 100, 61, 100],
             'kills' => [100, 90, 20, 50, 0],
             'would not kill with shield' => [100, 90, 30, 45, 0],
             'already dead' => [100, 90, 0, 50, 0],
