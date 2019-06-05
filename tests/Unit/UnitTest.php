@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Test\Emagia;
+namespace Test\Emagia\Unit;
 
 use Emagia\Property\Defence;
 use Emagia\Property\HealthPoints;

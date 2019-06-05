@@ -32,7 +32,7 @@ class TurnServiceTest extends TestCase
         $this->attacker->performAttack($this->defender->reveal())->shouldBeCalled(); //shouldBeCalled is an assertion
 
         $turn = new TurnService();
-        $turn->makeTurn($this->attacker->reveal(), $this->defender->reveal());
+        $turn->make($this->attacker->reveal(), $this->defender->reveal());
     }
 
     public function testAttacksDeadDefender(): void
@@ -42,7 +42,7 @@ class TurnServiceTest extends TestCase
         $this->attacker->performAttack($this->defender->reveal())->shouldNotBeCalled(); //shouldBeCalled is an assertion
 
         $turn = new TurnService();
-        $turn->makeTurn($this->attacker->reveal(), $this->defender->reveal());
+        $turn->make($this->attacker->reveal(), $this->defender->reveal());
     }
 
     public function testTriesToAttackWithDeadAttacker(): void
@@ -53,6 +53,6 @@ class TurnServiceTest extends TestCase
         $this->attacker->performAttack($this->defender->reveal())->shouldNotBeCalled(); //shouldBeCalled is an assertion
 
         $turn = new TurnService();
-        $turn->makeTurn($this->attacker->reveal(), $this->defender->reveal());
+        $turn->make($this->attacker->reveal(), $this->defender->reveal());
     }
 }

@@ -11,7 +11,7 @@ use LogicException;
  */
 class TurnService
 {
-    public function makeTurn(UnitInterface $attacker, UnitInterface $defender): void
+    public function make(UnitInterface $attacker, UnitInterface $defender): void
     {
         if (!$defender->isAlive()) {
             return;
