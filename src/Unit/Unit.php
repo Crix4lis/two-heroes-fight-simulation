@@ -16,6 +16,7 @@ class Unit implements UnitInterface
     private $defence;
     private $speed;
     private $luck;
+    private $identity;
 
     public function __construct(
         HealthPoints $healthPoints,
@@ -29,6 +30,7 @@ class Unit implements UnitInterface
         $this->defence = $defence;
         $this->speed = $speed;
         $this->luck = $luck;
+        $this->identity = md5((new \DateTime('now'))->format('Y-m-d H:i:s')); //dumb identity
     }
 
     public function performAttack(UnitInterface $unitToAttack): void
@@ -79,5 +81,25 @@ class Unit implements UnitInterface
     public function isAlive(): bool
     {
         return $this->healthPoints->getPoints() > 0;
+    }
+
+    public function getLuck(): Luck
+    {
+        return $this->luck;
+    }
+
+    public function getSpeed(): Speed
+    {
+        return $this->speed;
+    }
+
+    public function isTheSameInstance(IdentityInterface $instance): bool
+    {
+        return $this->identity === $instance->getIdentity();
+    }
+
+    public function getIdentity(): string
+    {
+        return $this->identity;
     }
 }

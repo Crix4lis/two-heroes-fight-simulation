@@ -5,8 +5,11 @@ namespace Emagia\Modifier;
 
 use Emagia\Property\Defence;
 use Emagia\Property\HealthPoints;
+use Emagia\Property\Luck;
+use Emagia\Property\Speed;
 use Emagia\Property\Strength;
 use Emagia\Randomizer\RandomizerInterface;
+use Emagia\Unit\IdentityInterface;
 use Emagia\Unit\Unit;
 use Emagia\Unit\UnitInterface;
 
@@ -84,5 +87,25 @@ class MagicShield implements UnitInterface
     public function isAlive(): bool
     {
         return $this->unit->isAlive();
+    }
+
+    public function getLuck(): Luck
+    {
+        return $this->unit->getLuck();
+    }
+
+    public function getSpeed(): Speed
+    {
+        return $this->unit->getSpeed();
+    }
+
+    public function isTheSameInstance(IdentityInterface $instance): bool
+    {
+        return $this->unit->isTheSameInstance($instance);
+    }
+
+    public function getIdentity(): string
+    {
+        return $this->unit->getIdentity();
     }
 }

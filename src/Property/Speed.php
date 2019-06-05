@@ -5,7 +5,7 @@ namespace Emagia\Property;
 
 use Webmozart\Assert\Assert;
 
-class Speed
+class Speed implements ComparisionInterface, PropertyPointsInterface
 {
     private $speed;
 
@@ -15,5 +15,24 @@ class Speed
         Assert::lessThanEq($speed, 60);
 
         $this->speed = $speed;
+    }
+
+    public function isGreater(PropertyPointsInterface $property): bool
+    {
+        Assert::isInstanceOf($property, __class__);
+
+        return $this->speed > $property->getPoints();
+    }
+
+    public function getPoints(): int
+    {
+        return $this->speed;
+    }
+
+    public function isEqual(PropertyPointsInterface $property): bool
+    {
+        Assert::isInstanceOf($property, __class__);
+
+        return $this->speed === $property->getPoints();
     }
 }

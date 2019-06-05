@@ -5,9 +5,11 @@ namespace Emagia\Unit;
 
 use Emagia\Property\Defence;
 use Emagia\Property\HealthPoints;
+use Emagia\Property\Luck;
+use Emagia\Property\Speed;
 use Emagia\Property\Strength;
 
-interface UnitInterface
+interface UnitInterface extends IdentityInterface
 {
     public function performAttack(UnitInterface $unitToAttack): void;
     public function defendFromAttack(Strength $attackStrength): void;
@@ -16,4 +18,6 @@ interface UnitInterface
     public function receiveDamage(HealthPoints $receiveDamage): void;
     public function getDefense(): Defence;
     public function isAlive(): bool;
+    public function getLuck(): Luck;
+    public function getSpeed(): Speed;
 }

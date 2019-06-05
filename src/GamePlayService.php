@@ -15,12 +15,17 @@ class GamePlayService
     private $turn;
     /** @var UnitFactory */
     private $unitFactory;
+    /** @var AttackerResolver */
+    private $attackResolver;
 
     public function startBattle(): void
     {
         $turnNo = 1;
         $wildBeast = $this->unitFactory->createWildBeast();
         $orderus = $this->unitFactory->createOrderus();
+
+        $firstAttacker = $this->attackResolver->resolveAttacker($wildBeast, $orderus);
+        $firstDefender = $this->getDefender($wildBeast, $orderus, $firstAttacker);
 
         while ($this->keepFighting($firstAttacker, $firstDefender, $turnNo)) {
             $this->makeTurn($firstAttacker, $firstDefender, $turnNo);
@@ -40,5 +45,10 @@ class GamePlayService
         }
 
         $this->turn->make($firstDefender, $firstAttacker);
+    }
+
+    private function getDefender(UnitInterface $u1, UnitInterface $u2, UnitInterface $attacker): UnitInterface
+    {
+        return $u1->isTheSameInstance($attacker) ? $u1: $u2;
     }
 }

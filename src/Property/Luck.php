@@ -5,7 +5,7 @@ namespace Emagia\Property;
 
 use Webmozart\Assert\Assert;
 
-class Luck
+class Luck implements ComparisionInterface, PropertyPointsInterface
 {
     private $luck;
 
@@ -18,5 +18,24 @@ class Luck
         Assert::lessThanEq($luck, 45);
 
         $this->luck = $luck;
+    }
+
+    public function isGreater(PropertyPointsInterface $property): bool
+    {
+        Assert::isInstanceOf($property, __class__);
+
+        return $this->luck > $property->getPoints();
+    }
+
+    public function getPoints(): int
+    {
+        return $this->luck;
+    }
+
+    public function isEqual(PropertyPointsInterface $property): bool
+    {
+        Assert::isInstanceOf($property, __class__);
+
+        return $this->luck === $property->getPoints();
     }
 }
