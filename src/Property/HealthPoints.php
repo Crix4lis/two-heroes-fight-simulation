@@ -32,4 +32,12 @@ class HealthPoints implements PropertyPointsInterface
     {
         return $this->health;
     }
+
+    public function reduceTimes(int $times): HealthPoints
+    {
+        Assert::greaterThan($times, 0);
+        $result = $this->health / $times;
+
+        return new HealthPoints((int) round($result, 0));
+    }
 }

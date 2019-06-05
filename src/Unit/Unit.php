@@ -9,7 +9,7 @@ use Emagia\Property\Luck;
 use Emagia\Property\Speed;
 use Emagia\Property\Strength;
 
-class Unit
+class Unit implements UnitInterface
 {
     private $healthPoints;
     private $strength;
@@ -31,17 +31,22 @@ class Unit
         $this->luck = $luck;
     }
 
-    public function performAttack(Unit $unitToAttack): void
+    public function performAttack(UnitInterface $unitToAttack): void
     {
+        if ($unitToAttack->getCurrentHealth()->getPoints() <= 0) {
+            //todo: already dead - event?
+            return;
+        }
+
         //todo: event zaatakowano
-        $unitToAttack->defendFrom($this);
+        $unitToAttack->defendFromAttack($this->strength);
     }
 
-    public function defendFrom(Unit $defendFrom): void
+    public function defendFromAttack(Strength $attackStrength): void
     {
         $blocked = $this->defence->getPoints();
         //todo: event zablokowano $blocked;
-        $dmgToReceive = $defendFrom->getAttackStrength()->getPoints() - $blocked;
+        $dmgToReceive = $attackStrength->getPoints() - $blocked;
 
         if ($dmgToReceive < 0) {
             $dmgToReceive = 0;
@@ -60,9 +65,14 @@ class Unit
         return $this->healthPoints;
     }
 
-    private function receiveDamage(HealthPoints $receiveDamage): void
+    public function receiveDamage(HealthPoints $receiveDamage): void
     {
         //todo: event otrzymano
         $this->healthPoints = $this->healthPoints->subtract($receiveDamage);
+    }
+
+    public function getDefense(): Defence
+    {
+        return $this->defence;
     }
 }
