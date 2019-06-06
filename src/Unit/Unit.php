@@ -25,12 +25,15 @@ class Unit implements UnitInterface
         Speed $speed,
         Luck $luck
     ){
+        $hash = $healthPoints->getPoints() . $strength->getPoints()
+            . $defence->getPoints() . $speed->getPoints() . $luck->getPoints();
+
         $this->healthPoints = $healthPoints;
         $this->strength = $strength;
         $this->defence = $defence;
         $this->speed = $speed;
         $this->luck = $luck;
-        $this->identity = md5((new \DateTime('now'))->format('Y-m-d H:i:s')); //dumb identity
+        $this->identity = md5((new \DateTime('now'))->format('Y-m-d H:i:s') . $hash); //dumb identity
     }
 
     public function performAttack(UnitInterface $unitToAttack): void
