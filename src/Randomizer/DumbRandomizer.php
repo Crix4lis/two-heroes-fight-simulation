@@ -7,6 +7,6 @@ class DumbRandomizer implements RandomizerInterface
 {
     public function randomize(int $from, int $to): int
     {
-        return random_int(0, 100);
+        return random_int($from, $to);
     }
 }
