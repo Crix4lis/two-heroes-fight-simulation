@@ -3,13 +3,18 @@ declare(strict_types=1);
 
 namespace Emagia\Unit;
 
+use Emagia\Event\BlockedDamageEvent;
+use Emagia\Event\DefenderAlredyDeadEvent;
+use Emagia\Event\PerformedAttackEvent;
+use Emagia\Event\ReceivedDamageEvent;
 use Emagia\Property\Defence;
 use Emagia\Property\HealthPoints;
 use Emagia\Property\Luck;
 use Emagia\Property\Speed;
 use Emagia\Property\Strength;
+use Emagia\Subject;
 
-final class Unit implements UnitInterface
+final class Unit extends Subject implements UnitInterface
 {
     /** @var string */
     private $name;
@@ -43,11 +48,11 @@ final class Unit implements UnitInterface
     public function performAttack(UnitInterface $unitToAttack): void
     {
         if ($unitToAttack->getCurrentHealth()->getPoints() <= 0) {
-            //todo: already dead - event?
+            $this->notifyObservers(new DefenderAlredyDeadEvent($this, $unitToAttack));
             return;
         }
 
-        //todo: event zaatakowano
+        $this->notifyObservers(new PerformedAttackEvent($this->name, $this->strength->getPoints()));
         $unitToAttack->defendFromAttack($this->strength);
     }
 
@@ -55,7 +60,7 @@ final class Unit implements UnitInterface
     {
         $blocked = $this->defence->getPoints();
         $dmgToReceive = $attackStrength->getPoints() - $blocked;
-        //todo: event zablokowano $blocked;
+        $this->notifyObservers(new BlockedDamageEvent($this->name, $blocked));
 
         $this->receiveDamage(new HealthPoints($dmgToReceive));
     }
@@ -72,7 +77,7 @@ final class Unit implements UnitInterface
 
     public function receiveDamage(HealthPoints $receiveDamage): void
     {
-        //todo: event otrzymano
+        $this->notifyObservers(new ReceivedDamageEvent($this->name, $receiveDamage->getPoints()));
         $this->healthPoints = $this->healthPoints->subtract($receiveDamage);
     }
 
