@@ -7,6 +7,7 @@ use Emagia\Event\BlockedDamageEvent;
 use Emagia\Event\DefenderAlredyDeadEvent;
 use Emagia\Event\PerformedAttackEvent;
 use Emagia\Event\ReceivedDamageEvent;
+use Emagia\Event\UnitDiedEvent;
 use Emagia\ObserverPattern\SubjectInterface;
 use Emagia\Property\Defence;
 use Emagia\Property\HealthPoints;
@@ -80,8 +81,12 @@ final class Unit implements UnitInterface, SubjectInterface
     public function receiveDamage(HealthPoints $receiveDamage): void
     {
         $this->notifyObservers(new ReceivedDamageEvent($this->name, $receiveDamage->getPoints()));
-        //todo: event dead
-        $this->healthPoints = $this->healthPoints->subtract($receiveDamage);
+        $subtracted = $this->healthPoints->subtract($receiveDamage);
+
+        if ($subtracted->getPoints() === 0) {
+            $this->notifyObservers(new UnitDiedEvent($this->name));
+        }
+        $this->healthPoints = $subtracted;
     }
 
     public function getDefense(): Defence

@@ -7,6 +7,7 @@ use Emagia\Event\BlockedDamageEvent;
 use Emagia\Event\PerformedAttackEvent;
 use Emagia\Event\RapidStrikeUsedEvent;
 use Emagia\Event\ReceivedDamageEvent;
+use Emagia\Event\UnitDiedEvent;
 use Emagia\Modifier\RapidStrike;
 use Emagia\ObserverPattern\ObserverInterface;
 use Emagia\Property\Defence;
@@ -66,7 +67,6 @@ class RapidStrikeSubjectTest extends TestCase
         //def: 40 - 60
         return [// hpa; att;hpd; def;left
             'def less than attack' => [100, 90, 100, 60, 40],
-            'kills with second attack' => [100, 90, 70, 50, 0],
         ];
     }
 
@@ -127,6 +127,73 @@ class RapidStrikeSubjectTest extends TestCase
         $this->assertEquals($expectedDefenderHpLeft, $defender->getCurrentHealth()->getPoints());
     }
 
+    public function unitsStatsForRapidStrikeUsageAndDefenderKillDataProvider(): array
+    {
+        //att: 60 - 90
+        //def: 40 - 60
+        return [// hpa; att;hpd; def;left
+            'kills with second attack' => [100, 90, 70, 50, 0],
+        ];
+    }
+
+    /**
+     * @dataProvider unitsStatsForRapidStrikeUsageAndDefenderKillDataProvider
+     *
+     * @param int $attackerHp
+     * @param int $attackPts
+     * @param int $defenderHp
+     * @param int $defendPts
+     * @param int $expectedDefenderHpLeft
+     */
+    public function testAttacksDefenderWithRapidStrikeKillsDefenderAndChecksIfObserverIsNotified(
+        int $attackerHp,
+        int $attackPts,
+        int $defenderHp,
+        int $defendPts,
+        int $expectedDefenderHpLeft
+    ): void {
+        $this->randomizer->randomize(1, 100)->willReturn(10);
+        $this->strength->getPoints()->willReturn(1);
+        $this->defence->getPoints()->willReturn(1);
+        $this->speed->getPoints()->willReturn(1);
+        $this->luck->getPoints()->willReturn(1);
+        $attackerName = 'attacker';
+        $defenderName = 'defender';
+
+        $this->observer->update(new PerformedAttackEvent($attackerName, $attackPts))->shouldBeCalledTimes(2);
+        $this->observer->update(new RapidStrikeUsedEvent($attackerName))->shouldBeCalled();
+        $this->observer->update(new BlockedDamageEvent($defenderName, $defendPts))->shouldBeCalled();
+        $this->observer->update(
+            new ReceivedDamageEvent($defenderName, $attackPts - $defendPts)
+        )->shouldBeCalled();
+        $this->observer->update(new UnitDiedEvent($defenderName))->shouldBeCalled();
+
+        $attacker = new RapidStrike(new Unit(
+            $attackerName,
+            new HealthPoints($attackerHp),
+            new Strength($attackPts),
+            $this->defence->reveal(),
+            $this->speed->reveal(),
+            $this->luck->reveal()
+        ),$this->randomizer->reveal());
+        $attacker->register($this->observer->reveal());
+
+        $defender = new Unit(
+            $defenderName,
+            new HealthPoints($defenderHp),
+            $this->strength->reveal(),
+            new Defence($defendPts),
+            $this->speed->reveal(),
+            $this->luck->reveal()
+        );
+
+        $defender->register($this->observer->reveal());
+        $attacker->performAttack($defender);
+
+        $this->assertEquals($attackerHp, $attacker->getCurrentHealth()->getPoints());
+        $this->assertEquals($expectedDefenderHpLeft, $defender->getCurrentHealth()->getPoints());
+    }
+
     public function testWouldUseRapidStrikeButDefenderIsKilledWithFirstAttack(): void
     {
         $this->randomizer->randomize(1, 100)->willReturn(10);
@@ -147,6 +214,7 @@ class RapidStrikeSubjectTest extends TestCase
         $this->observer->update(
             new ReceivedDamageEvent($defenderName, $attackPts - $defendPts)
         )->shouldBeCalled();
+        $this->observer->update(new UnitDiedEvent($defenderName))->shouldBeCalled();
 
         $attacker = new RapidStrike(new Unit(
             $attackerName,
@@ -181,7 +249,6 @@ class RapidStrikeSubjectTest extends TestCase
         return [// hpa; att;hpd; def;left
             'def less than attack' => [100, 90, 100, 60, 70],
             'would kill with second attack' => [100, 90, 70, 50, 30],
-            'kills' => [100, 90, 20, 50, 0],
         ];
     }
 
@@ -241,5 +308,55 @@ class RapidStrikeSubjectTest extends TestCase
 
         $this->assertEquals($attackerHp, $attacker->getCurrentHealth()->getPoints());
         $this->assertEquals($expectedDefenderHpLeft, $defender->getCurrentHealth()->getPoints());
+    }
+
+    public function testAttacksDefenderWithoutRapidStrikeKillsDefenderAndChecksIfObserverIsNotified(): void
+    {
+        $attackerHp = 100;
+        $attackPts = 90;
+        $defenderHp = 20;
+        $defendPts = 50;
+
+        $this->randomizer->randomize(1, 100)->willReturn(11);
+        $this->strength->getPoints()->willReturn(1);
+        $this->defence->getPoints()->willReturn(1);
+        $this->speed->getPoints()->willReturn(1);
+        $this->luck->getPoints()->willReturn(1);
+        $attackerName = 'attacker';
+        $defenderName = 'defender';
+        $reducedToByShield = $attackPts - $defendPts;
+
+        $this->observer->update(new PerformedAttackEvent($attackerName, $attackPts))->shouldBeCalledTimes(1);
+        $this->observer->update(new BlockedDamageEvent($defenderName, $defendPts))->shouldBeCalled();
+        $this->observer->update(new RapidStrikeUsedEvent($attackerName))->shouldNotBeCalled();
+        $this->observer->update(
+            new ReceivedDamageEvent($defenderName, $reducedToByShield)
+        )->shouldBeCalled();
+        $this->observer->update(new UnitDiedEvent($defenderName))->shouldBeCalled();
+
+        $attacker = new RapidStrike(new Unit(
+            $attackerName,
+            new HealthPoints($attackerHp),
+            new Strength($attackPts),
+            $this->defence->reveal(),
+            $this->speed->reveal(),
+            $this->luck->reveal()
+        ), $this->randomizer->reveal());
+        $attacker->register($this->observer->reveal());
+
+        $defender = new Unit(
+            $defenderName,
+            new HealthPoints($defenderHp),
+            $this->strength->reveal(),
+            new Defence($defendPts),
+            $this->speed->reveal(),
+            $this->luck->reveal()
+        );
+
+        $defender->register($this->observer->reveal());
+        $attacker->performAttack($defender);
+
+        $this->assertEquals($attackerHp, $attacker->getCurrentHealth()->getPoints());
+        $this->assertEquals(0, $defender->getCurrentHealth()->getPoints());
     }
 }

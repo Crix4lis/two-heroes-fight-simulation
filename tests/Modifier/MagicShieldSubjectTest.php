@@ -7,6 +7,7 @@ use Emagia\Event\BlockedDamageEvent;
 use Emagia\Event\MagicShieldUsedEvent;
 use Emagia\Event\PerformedAttackEvent;
 use Emagia\Event\ReceivedDamageEvent;
+use Emagia\Event\UnitDiedEvent;
 use Emagia\Modifier\MagicShield;
 use Emagia\ObserverPattern\ObserverInterface;
 use Emagia\Property\Defence;
@@ -67,7 +68,6 @@ class MagicShieldSubjectTest extends TestCase
         return [// hpa; att;hpd; def;left
             'def less than attack' => [100, 90, 100, 50, 80],
             'would kill without shield' => [100, 90, 30, 50, 10],
-            'kills' => [100, 90, 20, 50, 0],
         ];
     }
 
@@ -129,14 +129,61 @@ class MagicShieldSubjectTest extends TestCase
         $this->assertEquals($expectedDefenderHpLeft, $defender->getCurrentHealth()->getPoints());
     }
 
+    public function testDefendsWithMagicShieldFromAttackerButDiesAndChecksIfObserverIsNotified(): void {
+        $attackerHp = 100;
+        $attackPts = 90;
+        $defenderHp = 20;
+        $defendPts = 50;
+
+        $this->randomizer->randomize(1, 100)->willReturn(20);
+        $this->strength->getPoints()->willReturn(1);
+        $this->defence->getPoints()->willReturn(1);
+        $this->speed->getPoints()->willReturn(1);
+        $this->luck->getPoints()->willReturn(1);
+        $attackerName = 'attacker';
+        $defenderName = 'defender';
+        $reducedToByShield = (int)round(($attackPts - $defendPts) / 2, 0);
+
+        $this->observer->update(new PerformedAttackEvent($attackerName, $attackPts))->shouldBeCalled();
+        $this->observer->update(new BlockedDamageEvent($defenderName, $defendPts))->shouldBeCalled();
+        $this->observer->update(new MagicShieldUsedEvent($defenderName, $reducedToByShield))->shouldBeCalled();
+        $this->observer->update(
+            new ReceivedDamageEvent($defenderName, $reducedToByShield)
+        )->shouldBeCalled();
+        $this->observer->update(new UnitDiedEvent($defenderName))->shouldBeCalled();
+
+        $attacker = new Unit(
+            $attackerName,
+            new HealthPoints($attackerHp),
+            new Strength($attackPts),
+            $this->defence->reveal(),
+            $this->speed->reveal(),
+            $this->luck->reveal()
+        );
+        $attacker->register($this->observer->reveal());
+
+        $defender = new MagicShield(new Unit(
+            $defenderName,
+            new HealthPoints($defenderHp),
+            $this->strength->reveal(),
+            new Defence($defendPts),
+            $this->speed->reveal(),
+            $this->luck->reveal()
+        ), $this->randomizer->reveal());
+
+        $defender->register($this->observer->reveal());
+        $attacker->performAttack($defender);
+
+        $this->assertEquals($attackerHp, $attacker->getCurrentHealth()->getPoints());
+        $this->assertEquals(0, $defender->getCurrentHealth()->getPoints());
+    }
+
     public function unitsStatsForShieldNotUsageDataProvider(): array
     {
         //att: 60 - 90
         //def: 45 - 90
         return [// hpa; att;hpd; def;left
             'def less than attack' => [100, 90, 100, 50, 60],
-            'would kill without shield' => [100, 90, 30, 50, 0],
-            'kills' => [100, 90, 20, 50, 0],
         ];
     }
 
@@ -171,6 +218,73 @@ class MagicShieldSubjectTest extends TestCase
         $this->observer->update(
             new ReceivedDamageEvent($defenderName, $reducedToByShield)
         )->shouldBeCalled();
+
+        $attacker = new Unit(
+            $attackerName,
+            new HealthPoints($attackerHp),
+            new Strength($attackPts),
+            $this->defence->reveal(),
+            $this->speed->reveal(),
+            $this->luck->reveal()
+        );
+        $attacker->register($this->observer->reveal());
+
+        $defender = new MagicShield(new Unit(
+            $defenderName,
+            new HealthPoints($defenderHp),
+            $this->strength->reveal(),
+            new Defence($defendPts),
+            $this->speed->reveal(),
+            $this->luck->reveal()
+        ), $this->randomizer->reveal());
+
+        $defender->register($this->observer->reveal());
+        $attacker->performAttack($defender);
+
+        $this->assertEquals($attackerHp, $attacker->getCurrentHealth()->getPoints());
+        $this->assertEquals($expectedDefenderHpLeft, $defender->getCurrentHealth()->getPoints());
+    }
+
+    public function unitsStatsForShieldNotUsageAndDyingDataProvider(): array
+    {
+        return [// hpa; att;hpd; def;left
+            'would kill without shield' => [100, 90, 30, 50, 0],
+            'kills' => [100, 90, 20, 50, 0],
+        ];
+    }
+
+    /**
+     * @dataProvider unitsStatsForShieldNotUsageAndDyingDataProvider
+     *
+     * @param int $attackerHp
+     * @param int $attackPts
+     * @param int $defenderHp
+     * @param int $defendPts
+     * @param int $expectedDefenderHpLeft
+     */
+    public function testDefendsWithoutMagicShieldFromAttackerButDiesAndChecksIfObserverIsNotified(
+        int $attackerHp,
+        int $attackPts,
+        int $defenderHp,
+        int $defendPts,
+        int $expectedDefenderHpLeft
+    ): void {
+        $this->randomizer->randomize(1, 100)->willReturn(21);
+        $this->strength->getPoints()->willReturn(1);
+        $this->defence->getPoints()->willReturn(1);
+        $this->speed->getPoints()->willReturn(1);
+        $this->luck->getPoints()->willReturn(1);
+        $attackerName = 'attacker';
+        $defenderName = 'defender';
+        $reducedToByShield = $attackPts - $defendPts;
+
+        $this->observer->update(new PerformedAttackEvent($attackerName, $attackPts))->shouldBeCalled();
+        $this->observer->update(new BlockedDamageEvent($defenderName, $defendPts))->shouldBeCalled();
+        $this->observer->update(new MagicShieldUsedEvent($defenderName, $reducedToByShield))->shouldNotBeCalled();
+        $this->observer->update(
+            new ReceivedDamageEvent($defenderName, $reducedToByShield)
+        )->shouldBeCalled();
+        $this->observer->update(new UnitDiedEvent($defenderName))->shouldBeCalled();
 
         $attacker = new Unit(
             $attackerName,

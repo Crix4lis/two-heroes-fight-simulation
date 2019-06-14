@@ -7,6 +7,7 @@ use Emagia\Event\BlockedDamageEvent;
 use Emagia\Event\DefenderAlredyDeadEvent;
 use Emagia\Event\PerformedAttackEvent;
 use Emagia\Event\ReceivedDamageEvent;
+use Emagia\Event\UnitDiedEvent;
 use Emagia\ObserverPattern\ObserverInterface;
 use Emagia\Property\Defence;
 use Emagia\Property\HealthPoints;
@@ -59,7 +60,6 @@ class UnitSubjectTest extends TestCase
         //def: 45 - 90
         return [// hpa; att;hpd; def;left
             'def less than attack' => [100, 90, 100, 50, 60],
-            'kills' => [100, 90, 30, 50, 0],
         ];
     }
 
@@ -112,6 +112,48 @@ class UnitSubjectTest extends TestCase
 
         $this->assertEquals($attackerHp, $attacker->getCurrentHealth()->getPoints());
         $this->assertEquals($expectedDefenderHpLeft, $defender->getCurrentHealth()->getPoints());
+    }
+
+    public function testDefendsFromAttackerAndDefenderDiesAndChecksIfObserverIsNotified(): void {
+        $this->strength->getPoints()->willReturn(1);
+        $this->defence->getPoints()->willReturn(1);
+        $this->speed->getPoints()->willReturn(1);
+        $this->luck->getPoints()->willReturn(1);
+        $attackerHp = 100;
+        $defenderHp = 30;
+        $attackPts = 90;
+        $defendPts = 50;
+
+        $this->observer->update(new PerformedAttackEvent('attacker', $attackPts))->shouldBeCalled();
+        $this->observer->update(new BlockedDamageEvent('defender', $defendPts))->shouldBeCalled();
+        $this->observer->update(
+            new ReceivedDamageEvent('defender', $attackPts - $defendPts)
+        )->shouldBeCalled();
+        $this->observer->update(new UnitDiedEvent('defender'))->shouldBeCalled();
+
+        $attacker = new Unit(
+            'attacker',
+            new HealthPoints($attackerHp),
+            new Strength($attackPts),
+            $this->defence->reveal(),
+            $this->speed->reveal(),
+            $this->luck->reveal()
+        );
+        $attacker->register($this->observer->reveal());
+
+        $defender = new Unit(
+            'defender',
+            new HealthPoints($defenderHp),
+            $this->strength->reveal(),
+            new Defence($defendPts),
+            $this->speed->reveal(),
+            $this->luck->reveal()
+        );
+        $defender->register($this->observer->reveal());
+        $attacker->performAttack($defender);
+
+        $this->assertEquals($attackerHp, $attacker->getCurrentHealth()->getPoints());
+        $this->assertEquals(0, $defender->getCurrentHealth()->getPoints());
     }
 
     public function testChecksIfObserverIsNotifiedThatDefenderIsAlreadyDead(): void
