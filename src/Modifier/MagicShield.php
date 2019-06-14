@@ -17,6 +17,7 @@ use Emagia\Randomizer\RandomizerInterface;
 use Emagia\Unit\IdentityInterface;
 use Emagia\Unit\Unit;
 use Emagia\Unit\UnitInterface;
+use Webmozart\Assert\Assert;
 
 /**
  * Decorator for:
@@ -34,6 +35,7 @@ class MagicShield implements UnitInterface, SubjectInterface
 
     public function __construct(UnitInterface $unit, RandomizerInterface $randomizer)
     {
+        Assert::isInstanceOf($unit, SubjectInterface::class);
         $this->unit = $unit;
         $this->randomizer = $randomizer;
     }

@@ -80,6 +80,7 @@ final class Unit implements UnitInterface, SubjectInterface
     public function receiveDamage(HealthPoints $receiveDamage): void
     {
         $this->notifyObservers(new ReceivedDamageEvent($this->name, $receiveDamage->getPoints()));
+        //todo: event dead
         $this->healthPoints = $this->healthPoints->subtract($receiveDamage);
     }
 

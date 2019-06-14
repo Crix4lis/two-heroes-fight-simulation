@@ -3,6 +3,10 @@ declare(strict_types=1);
 
 namespace Emagia\Modifier;
 
+use Emagia\Event\RapidStrikeUsedEvent;
+use Emagia\ObserverPattern\Event;
+use Emagia\ObserverPattern\ObserverInterface;
+use Emagia\ObserverPattern\SubjectInterface;
 use Emagia\Property\Defence;
 use Emagia\Property\HealthPoints;
 use Emagia\Property\Luck;
@@ -12,15 +16,16 @@ use Emagia\Randomizer\RandomizerInterface;
 use Emagia\Unit\IdentityInterface;
 use Emagia\Unit\Unit;
 use Emagia\Unit\UnitInterface;
+use Webmozart\Assert\Assert;
 
 /**
  * Decorator for:
  * @see Unit
  * Modifies attack ability
  */
-class RapidStrike implements UnitInterface
+class RapidStrike implements UnitInterface, SubjectInterface
 {
-    /** @var UnitInterface */
+    /** @var UnitInterface|SubjectInterface */
     private $unit;
     /** @var RandomizerInterface */
     private $randomizer;
@@ -29,6 +34,7 @@ class RapidStrike implements UnitInterface
 
     public function __construct(UnitInterface $unit, RandomizerInterface $randomizer)
     {
+        Assert::isInstanceOf($unit, SubjectInterface::class);
         $this->unit = $unit;
         $this->randomizer = $randomizer;
     }
@@ -37,13 +43,13 @@ class RapidStrike implements UnitInterface
     {
         $chance = $this->randomizer->randomize(1, 100);
 
+        $this->unit->performAttack($unitToAttack);
+
         // 10% chance
-        if ($chance <= self::RAPID_STRIKE_CHANCE) {
-            //todo: event double attack
+        if ($chance <= self::RAPID_STRIKE_CHANCE && $unitToAttack->isAlive()) {
+            $this->unit->notifyObservers(new RapidStrikeUsedEvent($this->unit->getName()));
             $this->unit->performAttack($unitToAttack);
         }
-
-        $this->unit->performAttack($unitToAttack);
     }
 
     public function defendFromAttack(Strength $attackStrength): void
@@ -99,5 +105,15 @@ class RapidStrike implements UnitInterface
     public function getName(): string
     {
         return $this->unit->getName();
+    }
+
+    public function register(ObserverInterface $observer): void
+    {
+        $this->unit->register($observer);
+    }
+
+    public function notifyObservers(Event $event): void
+    {
+        $this->unit->notifyObservers($event);
     }
 }
