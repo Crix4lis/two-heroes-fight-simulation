@@ -30,7 +30,7 @@ class UnitFactory
         $speed = new Speed($this->randomizer->randomize(40, 60));
         $luck = new Luck($this->randomizer->randomize(25, 40));
 
-        return new Unit($hp, $strength, $defence, $speed, $luck);
+        return new Unit('Wild Beast', $hp, $strength, $defence, $speed, $luck);
     }
 
     public function createOrderus(): UnitInterface
@@ -43,7 +43,7 @@ class UnitFactory
 
         return new MagicShield(
             new RapidStrike(
-                new Unit($hp, $strength, $defence, $speed, $luck),
+                new Unit('Orderus', $hp, $strength, $defence, $speed, $luck),
                 $this->randomizer
             ),
             $this->randomizer

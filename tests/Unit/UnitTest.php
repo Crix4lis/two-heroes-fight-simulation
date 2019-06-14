@@ -70,8 +70,13 @@ class UnitTest extends TestCase
         int $defendPts,
         int $expectedDefenderHpLeft
     ): void {
+        $this->strength->getPoints()->willReturn(1);
+        $this->defence->getPoints()->willReturn(1);
+        $this->speed->getPoints()->willReturn(1);
+        $this->luck->getPoints()->willReturn(1);
 
         $attacker = new Unit(
+            'name',
             new HealthPoints($attackerHp),
             new Strength($attackPts),
             $this->defence->reveal(),
@@ -80,6 +85,7 @@ class UnitTest extends TestCase
         );
 
         $defender = new Unit(
+            'name',
             new HealthPoints($defenderHp),
             $this->strength->reveal(),
             new Defence($defendPts),

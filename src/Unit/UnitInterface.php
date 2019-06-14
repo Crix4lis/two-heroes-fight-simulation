@@ -20,4 +20,5 @@ interface UnitInterface extends IdentityInterface
     public function isAlive(): bool;
     public function getLuck(): Luck;
     public function getSpeed(): Speed;
+    public function getName(): string;
 }

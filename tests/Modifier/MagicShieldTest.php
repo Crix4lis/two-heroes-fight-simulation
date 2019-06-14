@@ -91,8 +91,13 @@ class MagicShieldTest extends TestCase
         int $expectedDefenderHpLeft
     ): void {
         $this->randomizer->randomize(1, 100)->willReturn(20);
+        $this->strength->getPoints()->willReturn(1);
+        $this->defence->getPoints()->willReturn(1);
+        $this->speed->getPoints()->willReturn(1);
+        $this->luck->getPoints()->willReturn(1);
 
         $attacker = new Unit(
+            'name',
             new HealthPoints($attackerHp),
             new Strength($attackPts),
             $this->defence->reveal(),
@@ -101,6 +106,7 @@ class MagicShieldTest extends TestCase
         );
 
         $defender = new MagicShield(new Unit(
+            'name',
             new HealthPoints($defenderHp),
             $this->strength->reveal(),
             new Defence($defendPts),
@@ -131,8 +137,13 @@ class MagicShieldTest extends TestCase
         int $expectedDefenderHpLeft
     ): void {
         $this->randomizer->randomize(1, 100)->willReturn(21);
+        $this->strength->getPoints()->willReturn(1);
+        $this->defence->getPoints()->willReturn(1);
+        $this->speed->getPoints()->willReturn(1);
+        $this->luck->getPoints()->willReturn(1);
 
         $attacker = new Unit(
+            'name',
             new HealthPoints($attackerHp),
             new Strength($attackPts),
             $this->defence->reveal(),
@@ -141,6 +152,7 @@ class MagicShieldTest extends TestCase
         );
 
         $defender = new MagicShield(new Unit(
+            'name',
             new HealthPoints($defenderHp),
             $this->strength->reveal(),
             new Defence($defendPts),

@@ -9,8 +9,10 @@ use Emagia\Property\Luck;
 use Emagia\Property\Speed;
 use Emagia\Property\Strength;
 
-class Unit implements UnitInterface
+final class Unit implements UnitInterface
 {
+    /** @var string */
+    private $name;
     private $healthPoints;
     private $strength;
     private $defence;
@@ -19,6 +21,7 @@ class Unit implements UnitInterface
     private $identity;
 
     public function __construct(
+        string $name,
         HealthPoints $healthPoints,
         Strength $strength,
         Defence $defence,
@@ -28,6 +31,7 @@ class Unit implements UnitInterface
         $hash = $healthPoints->getPoints() . $strength->getPoints()
             . $defence->getPoints() . $speed->getPoints() . $luck->getPoints();
 
+        $this->name = $name;
         $this->healthPoints = $healthPoints;
         $this->strength = $strength;
         $this->defence = $defence;
@@ -50,12 +54,8 @@ class Unit implements UnitInterface
     public function defendFromAttack(Strength $attackStrength): void
     {
         $blocked = $this->defence->getPoints();
-        //todo: event zablokowano $blocked;
         $dmgToReceive = $attackStrength->getPoints() - $blocked;
-
-        if ($dmgToReceive < 0) {
-            $dmgToReceive = 0;
-        }
+        //todo: event zablokowano $blocked;
 
         $this->receiveDamage(new HealthPoints($dmgToReceive));
     }
@@ -104,5 +104,10 @@ class Unit implements UnitInterface
     public function getIdentity(): string
     {
         return $this->identity;
+    }
+
+    public function getName(): string
+    {
+        return $this->name;
     }
 }

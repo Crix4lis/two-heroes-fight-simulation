@@ -92,8 +92,13 @@ class RapidStrikeTest extends TestCase
         int $expectedDefenderHpLeft
     ): void {
         $this->randomizer->randomize(1, 100)->willReturn(10);
+        $this->strength->getPoints()->willReturn(1);
+        $this->defence->getPoints()->willReturn(1);
+        $this->speed->getPoints()->willReturn(1);
+        $this->luck->getPoints()->willReturn(1);
 
         $attacker = new RapidStrike(new Unit(
+            'name',
             new HealthPoints($attackerHp),
             new Strength($attackPts),
             $this->defence->reveal(),
@@ -102,6 +107,7 @@ class RapidStrikeTest extends TestCase
         ), $this->randomizer->reveal());
 
         $defender = new Unit(
+            'name',
             new HealthPoints($defenderHp),
             $this->strength->reveal(),
             new Defence($defendPts),
@@ -132,8 +138,13 @@ class RapidStrikeTest extends TestCase
         int $expectedDefenderHpLeft
     ): void {
         $this->randomizer->randomize(1, 100)->willReturn(21);
+        $this->strength->getPoints()->willReturn(1);
+        $this->defence->getPoints()->willReturn(1);
+        $this->speed->getPoints()->willReturn(1);
+        $this->luck->getPoints()->willReturn(1);
 
         $attacker = new Unit(
+            'name',
             new HealthPoints($attackerHp),
             new Strength($attackPts),
             $this->defence->reveal(),
@@ -142,6 +153,7 @@ class RapidStrikeTest extends TestCase
         );
 
         $defender = new MagicShield(new Unit(
+            'name',
             new HealthPoints($defenderHp),
             $this->strength->reveal(),
             new Defence($defendPts),

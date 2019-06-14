@@ -108,4 +108,9 @@ class MagicShield implements UnitInterface
     {
         return $this->unit->getIdentity();
     }
+
+    public function getName(): string
+    {
+        return $this->unit->getName();
+    }
 }
