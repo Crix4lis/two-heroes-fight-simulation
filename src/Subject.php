@@ -5,15 +5,14 @@ namespace Emagia;
 
 use Emagia\ObserverPattern\Event;
 use Emagia\ObserverPattern\ObserverInterface;
-use Emagia\ObserverPattern\SubjectInterface;
 
 /**
  * Base class for unit class that needs to notify interested classes when it changes its inner state
  */
-abstract class Subject implements SubjectInterface
+trait Subject
 {
     /** @var ObserverInterface[] */
-    protected $observers = [];
+    private $observers = [];
 
     public function register(ObserverInterface $observer): void
     {

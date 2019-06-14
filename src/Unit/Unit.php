@@ -7,6 +7,7 @@ use Emagia\Event\BlockedDamageEvent;
 use Emagia\Event\DefenderAlredyDeadEvent;
 use Emagia\Event\PerformedAttackEvent;
 use Emagia\Event\ReceivedDamageEvent;
+use Emagia\ObserverPattern\SubjectInterface;
 use Emagia\Property\Defence;
 use Emagia\Property\HealthPoints;
 use Emagia\Property\Luck;
@@ -14,8 +15,9 @@ use Emagia\Property\Speed;
 use Emagia\Property\Strength;
 use Emagia\Subject;
 
-final class Unit extends Subject implements UnitInterface
+final class Unit implements UnitInterface, SubjectInterface
 {
+    use Subject;
     /** @var string */
     private $name;
     private $healthPoints;

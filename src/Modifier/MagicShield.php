@@ -3,6 +3,11 @@ declare(strict_types=1);
 
 namespace Emagia\Modifier;
 
+use Emagia\Event\BlockedDamageEvent;
+use Emagia\Event\MagicShieldUsedEvent;
+use Emagia\ObserverPattern\Event;
+use Emagia\ObserverPattern\ObserverInterface;
+use Emagia\ObserverPattern\SubjectInterface;
 use Emagia\Property\Defence;
 use Emagia\Property\HealthPoints;
 use Emagia\Property\Luck;
@@ -18,9 +23,9 @@ use Emagia\Unit\UnitInterface;
  * @see Unit
  * Modifies defense ability
  */
-class MagicShield implements UnitInterface
+class MagicShield implements UnitInterface, SubjectInterface
 {
-    /** @var UnitInterface */
+    /** @var UnitInterface|SubjectInterface */
     private $unit;
     /** @var RandomizerInterface */
     private $randomizer;
@@ -41,14 +46,9 @@ class MagicShield implements UnitInterface
     public function defendFromAttack(Strength $attackStrength): void
     {
         $blocked = $this->unit->getDefense()->getPoints();
-        //todo: event zablokowano $blocked;
-        $dmgToReceive = $attackStrength->getPoints() - $blocked;
-
-        if ($dmgToReceive < 0) {
-            $dmgToReceive = 0;
-        }
-
-        $dmgToReceive = $this->useMagicShield(new HealthPoints($dmgToReceive));
+        $this->unit->notifyObservers(new BlockedDamageEvent($this->unit->getName(), $blocked));
+        $ptsToReceive = $attackStrength->getPoints() - $blocked;
+        $dmgToReceive = $this->useMagicShield(new HealthPoints($ptsToReceive));
         $this->receiveDamage($dmgToReceive);
     }
 
@@ -58,7 +58,7 @@ class MagicShield implements UnitInterface
 
         if ($chance <= self::MAGIC_SHIELD_CHANCE) {
             $dmgToReceive = $dmgToReceive->reduceTimes(2);
-            //todo: event magic shield used and reduced dmg
+            $this->unit->notifyObservers(new MagicShieldUsedEvent($this->unit->getName(), $dmgToReceive->getPoints()));
         }
 
         return $dmgToReceive;
@@ -112,5 +112,15 @@ class MagicShield implements UnitInterface
     public function getName(): string
     {
         return $this->unit->getName();
+    }
+
+    public function register(ObserverInterface $observer): void
+    {
+        $this->unit->register($observer);
+    }
+
+    public function notifyObservers(Event $event): void
+    {
+        $this->unit->notifyObservers($event);
     }
 }
