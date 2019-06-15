@@ -35,4 +35,9 @@ class Speed implements ComparisionInterface, PropertyPointsInterface
 
         return $this->speed === $property->getPoints();
     }
+
+    public function __toString()
+    {
+        return (string)$this->speed;
+    }
 }

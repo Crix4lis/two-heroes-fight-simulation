@@ -86,8 +86,12 @@ class UnitSubjectTest extends TestCase
         $this->observer->update(new PerformedAttackEvent('attacker', $attackPts))->shouldBeCalled();
         $this->observer->update(new BlockedDamageEvent('defender', $defendPts))->shouldBeCalled();
         $this->observer->update(
-            new ReceivedDamageEvent('defender', $attackPts - $defendPts)
-        )->shouldBeCalled();
+            new ReceivedDamageEvent(
+                'defender',
+                $attackPts - $defendPts,
+                $defenderHp - ($attackPts - $defendPts)
+            )
+        )->shouldBeCalledTimes(1);
 
         $attacker = new Unit(
             'attacker',
@@ -127,8 +131,12 @@ class UnitSubjectTest extends TestCase
         $this->observer->update(new PerformedAttackEvent('attacker', $attackPts))->shouldBeCalled();
         $this->observer->update(new BlockedDamageEvent('defender', $defendPts))->shouldBeCalled();
         $this->observer->update(
-            new ReceivedDamageEvent('defender', $attackPts - $defendPts)
-        )->shouldBeCalled();
+            new ReceivedDamageEvent(
+                'defender',
+                $attackPts - $defendPts,
+                0
+            )
+        )->shouldBeCalledTimes(1);
         $this->observer->update(new UnitDiedEvent('defender'))->shouldBeCalled();
 
         $attacker = new Unit(

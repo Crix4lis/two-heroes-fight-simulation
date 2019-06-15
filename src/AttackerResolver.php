@@ -5,8 +5,17 @@ namespace Emagia;
 
 use Emagia\Unit\UnitInterface;
 
-class AttackerResolver
+class AttackerResolver implements AttackerResolverInterface
 {
+    use Subject;
+    /**
+     * @param UnitInterface $firstUnit
+     * @param UnitInterface $secondUnit
+     *
+     * @return UnitInterface
+     *
+     * @throws AttackResolverException
+     */
     public function resolveAttacker(UnitInterface $firstUnit, UnitInterface $secondUnit): UnitInterface
     {
         if (!$firstUnit->getSpeed()->isEqual($secondUnit->getSpeed())) {
@@ -28,6 +37,5 @@ class AttackerResolver
     private function getLuckiest(UnitInterface $u1, UnitInterface $u2): UnitInterface
     {
         return $u1->getLuck()->isGreater($u2->getLuck()) ? $u1 : $u2;
-
     }
 }

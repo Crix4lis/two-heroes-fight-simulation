@@ -9,8 +9,15 @@ use LogicException;
 /**
  * Imitates domain service
  */
-class TurnService
+class TurnService implements TurnServiceInterface
 {
+    use Subject;
+    /**
+     * @param UnitInterface $attacker
+     * @param UnitInterface $defender
+     *
+     * @throws LogicException
+     */
     public function make(UnitInterface $attacker, UnitInterface $defender): void
     {
         if (!$defender->isAlive()) {

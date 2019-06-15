@@ -3,14 +3,14 @@ declare(strict_types=1);
 
 namespace Test\Emagia;
 
-use Emagia\AttackerResolver;
+use Emagia\AttackerResolverInterface;
 use Emagia\GamePlayService;
 use Emagia\Property\Defence;
 use Emagia\Property\HealthPoints;
 use Emagia\Property\Luck;
 use Emagia\Property\Speed;
 use Emagia\Property\Strength;
-use Emagia\TurnService;
+use Emagia\TurnServiceInterface;
 use Emagia\Unit\UnitFactory;
 use Emagia\Unit\UnitInterface;
 use PHPUnit\Framework\TestCase;
@@ -22,11 +22,11 @@ class GamePlayServiceTest extends TestCase
      */
     private $factory;
     /**
-     * @var \Emagia\AttackerResolver|\Prophecy\Prophecy\ObjectProphecy
+     * @var AttackerResolverInterface|\Prophecy\Prophecy\ObjectProphecy
      */
     private $attackResolver;
     /**
-     * @var \Emagia\TurnService|\Prophecy\Prophecy\ObjectProphecy
+     * @var \Emagia\TurnServiceInterface|\Prophecy\Prophecy\ObjectProphecy
      */
     private $turn;
     /**
@@ -61,8 +61,8 @@ class GamePlayServiceTest extends TestCase
     public function setUp(): void
     {
         $this->factory = $this->prophesize(UnitFactory::class);
-        $this->attackResolver = $this->prophesize(AttackerResolver::class);
-        $this->turn = $this->prophesize(TurnService::class);
+        $this->attackResolver = $this->prophesize(AttackerResolverInterface::class);
+        $this->turn = $this->prophesize(TurnServiceInterface::class);
         $this->wildBeast = $this->prophesize(UnitInterface::class);
         $this->orderus = $this->prophesize(UnitInterface::class);
         $this->hp = $this->prophesize(HealthPoints::class);

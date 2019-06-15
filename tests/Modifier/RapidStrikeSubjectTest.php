@@ -98,8 +98,19 @@ class RapidStrikeSubjectTest extends TestCase
         $this->observer->update(new RapidStrikeUsedEvent($attackerName))->shouldBeCalled();
         $this->observer->update(new BlockedDamageEvent($defenderName, $defendPts))->shouldBeCalled();
         $this->observer->update(
-            new ReceivedDamageEvent($defenderName, $attackPts - $defendPts)
-        )->shouldBeCalled();
+            new ReceivedDamageEvent(
+                $defenderName,
+                $attackPts - $defendPts,
+                $defenderHp - ($attackPts - $defendPts)
+            )
+        )->shouldBeCalledTimes(1);
+        $this->observer->update(
+            new ReceivedDamageEvent(
+                $defenderName,
+                $attackPts - $defendPts,
+                $defenderHp - 2*($attackPts - $defendPts)
+            )
+        )->shouldBeCalledTimes(1);
 
         $attacker = new RapidStrike(new Unit(
             $attackerName,
@@ -164,8 +175,20 @@ class RapidStrikeSubjectTest extends TestCase
         $this->observer->update(new RapidStrikeUsedEvent($attackerName))->shouldBeCalled();
         $this->observer->update(new BlockedDamageEvent($defenderName, $defendPts))->shouldBeCalled();
         $this->observer->update(
-            new ReceivedDamageEvent($defenderName, $attackPts - $defendPts)
-        )->shouldBeCalled();
+            new ReceivedDamageEvent(
+                $defenderName,
+                $attackPts - $defendPts,
+                $defenderHp - ($attackPts - $defendPts)
+            )
+        )->shouldBeCalledTimes(1);
+        $this->observer->update(
+            new ReceivedDamageEvent(
+                $defenderName,
+                $attackPts - $defendPts,
+                0
+            )
+        )->shouldBeCalledTimes(1);
+
         $this->observer->update(new UnitDiedEvent($defenderName))->shouldBeCalled();
 
         $attacker = new RapidStrike(new Unit(
@@ -212,8 +235,12 @@ class RapidStrikeSubjectTest extends TestCase
         $this->observer->update(new RapidStrikeUsedEvent($attackerName))->shouldNotBeCalled();
         $this->observer->update(new BlockedDamageEvent($defenderName, $defendPts))->shouldBeCalled();
         $this->observer->update(
-            new ReceivedDamageEvent($defenderName, $attackPts - $defendPts)
-        )->shouldBeCalled();
+            new ReceivedDamageEvent(
+                $defenderName,
+                $attackPts - $defendPts,
+                0
+            )
+        )->shouldBeCalledTimes(1);
         $this->observer->update(new UnitDiedEvent($defenderName))->shouldBeCalled();
 
         $attacker = new RapidStrike(new Unit(
@@ -281,8 +308,12 @@ class RapidStrikeSubjectTest extends TestCase
         $this->observer->update(new BlockedDamageEvent($defenderName, $defendPts))->shouldBeCalled();
         $this->observer->update(new RapidStrikeUsedEvent($attackerName))->shouldNotBeCalled();
         $this->observer->update(
-            new ReceivedDamageEvent($defenderName, $reducedToByShield)
-        )->shouldBeCalled();
+            new ReceivedDamageEvent(
+                $defenderName,
+                $attackPts - $defendPts,
+                $defenderHp - $reducedToByShield
+            )
+        )->shouldBeCalledTimes(1);
 
         $attacker = new RapidStrike(new Unit(
             $attackerName,
@@ -330,7 +361,7 @@ class RapidStrikeSubjectTest extends TestCase
         $this->observer->update(new BlockedDamageEvent($defenderName, $defendPts))->shouldBeCalled();
         $this->observer->update(new RapidStrikeUsedEvent($attackerName))->shouldNotBeCalled();
         $this->observer->update(
-            new ReceivedDamageEvent($defenderName, $reducedToByShield)
+            new ReceivedDamageEvent($defenderName, $reducedToByShield, 0)
         )->shouldBeCalled();
         $this->observer->update(new UnitDiedEvent($defenderName))->shouldBeCalled();
 

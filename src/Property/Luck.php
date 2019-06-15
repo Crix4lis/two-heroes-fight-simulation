@@ -38,4 +38,9 @@ class Luck implements ComparisionInterface, PropertyPointsInterface
 
         return $this->luck === $property->getPoints();
     }
+
+    public function __toString()
+    {
+        return (string)$this->luck;
+    }
 }

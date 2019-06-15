@@ -12,6 +12,7 @@
     },
     "require": {
         "php": "^7.1",
+        "monolog/monolog": "^1.24",
         "myclabs/php-enum": "^1.7",
         "webmozart/assert": "^1.4"
     },

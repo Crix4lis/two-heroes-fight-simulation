@@ -6,4 +6,5 @@ namespace Emagia\Property;
 interface PropertyPointsInterface
 {
     public function getPoints(): int;
+    public function __toString();
 }

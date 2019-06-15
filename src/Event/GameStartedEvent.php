@@ -15,7 +15,7 @@ class GameStartedEvent implements Event
     /**
      * @var string
      */
-    private $attackername;
+    private $attackerName;
     /**
      * @var \Emagia\Property\HealthPoints
      */
@@ -66,7 +66,7 @@ class GameStartedEvent implements Event
     private $maxRounds;
 
     public function __construct(
-        string $attackername,
+        string $attackerName,
         HealthPoints $attackerHealth,
         Strength $attackerStrength,
         Defence $attackerDefense,
@@ -81,7 +81,7 @@ class GameStartedEvent implements Event
         int $maxRounds
     )
     {
-        $this->attackername = $attackername;
+        $this->attackerName = $attackerName;
         $this->attackerHealth = $attackerHealth;
         $this->attackerStrength = $attackerStrength;
         $this->attackerDefense = $attackerDefense;
@@ -99,9 +99,9 @@ class GameStartedEvent implements Event
     /**
      * @return string
      */
-    public function getAttackername(): string
+    public function getAttackerName(): string
     {
-        return $this->attackername;
+        return $this->attackerName;
     }
 
     /**

@@ -21,4 +21,9 @@ class Strength implements PropertyPointsInterface
     {
         return $this->strength;
     }
+
+    public function __toString()
+    {
+        return (string)$this->strength;
+    }
 }

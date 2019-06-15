@@ -100,8 +100,12 @@ class MagicShieldSubjectTest extends TestCase
         $this->observer->update(new BlockedDamageEvent($defenderName, $defendPts))->shouldBeCalled();
         $this->observer->update(new MagicShieldUsedEvent($defenderName, $reducedToByShield))->shouldBeCalled();
         $this->observer->update(
-            new ReceivedDamageEvent($defenderName, $reducedToByShield)
-        )->shouldBeCalled();
+            new ReceivedDamageEvent(
+                $defenderName,
+                $reducedToByShield,
+                $defenderHp - $reducedToByShield
+            )
+        )->shouldBeCalledTimes(1);
 
         $attacker = new Unit(
             $attackerName,
@@ -148,8 +152,12 @@ class MagicShieldSubjectTest extends TestCase
         $this->observer->update(new BlockedDamageEvent($defenderName, $defendPts))->shouldBeCalled();
         $this->observer->update(new MagicShieldUsedEvent($defenderName, $reducedToByShield))->shouldBeCalled();
         $this->observer->update(
-            new ReceivedDamageEvent($defenderName, $reducedToByShield)
-        )->shouldBeCalled();
+            new ReceivedDamageEvent(
+                $defenderName,
+                $reducedToByShield,
+                $defenderHp - $reducedToByShield
+            )
+        )->shouldBeCalledTimes(1);
         $this->observer->update(new UnitDiedEvent($defenderName))->shouldBeCalled();
 
         $attacker = new Unit(
@@ -216,8 +224,12 @@ class MagicShieldSubjectTest extends TestCase
         $this->observer->update(new BlockedDamageEvent($defenderName, $defendPts))->shouldBeCalled();
         $this->observer->update(new MagicShieldUsedEvent($defenderName, $reducedToByShield))->shouldNotBeCalled();
         $this->observer->update(
-            new ReceivedDamageEvent($defenderName, $reducedToByShield)
-        )->shouldBeCalled();
+            new ReceivedDamageEvent(
+                $defenderName,
+                $reducedToByShield,
+                $defenderHp - $reducedToByShield
+            )
+        )->shouldBeCalledTimes(1);
 
         $attacker = new Unit(
             $attackerName,
@@ -282,8 +294,12 @@ class MagicShieldSubjectTest extends TestCase
         $this->observer->update(new BlockedDamageEvent($defenderName, $defendPts))->shouldBeCalled();
         $this->observer->update(new MagicShieldUsedEvent($defenderName, $reducedToByShield))->shouldNotBeCalled();
         $this->observer->update(
-            new ReceivedDamageEvent($defenderName, $reducedToByShield)
-        )->shouldBeCalled();
+            new ReceivedDamageEvent(
+                $defenderName,
+                $reducedToByShield,
+                0
+            )
+        )->shouldBeCalledTimes(1);
         $this->observer->update(new UnitDiedEvent($defenderName))->shouldBeCalled();
 
         $attacker = new Unit(

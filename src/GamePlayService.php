@@ -7,6 +7,7 @@ use Emagia\Event\GameFinishedWithoutWinnerEvent;
 use Emagia\Event\GameFinishedWithWinner;
 use Emagia\Event\GameStartedEvent;
 use Emagia\Event\TurnStartsEvent;
+use Emagia\ObserverPattern\ObserverInterface;
 use Emagia\ObserverPattern\SubjectInterface;
 use Emagia\Unit\UnitFactory;
 use Emagia\Unit\UnitInterface;
@@ -16,25 +17,30 @@ use Emagia\Unit\UnitInterface;
  */
 class GamePlayService implements SubjectInterface
 {
-    use Subject;
-    /** @var TurnService */
+    use Subject {
+        register as protected registerObserver;
+    }
+
+    /** @var TurnServiceInterface */
     private $turn;
     /** @var UnitFactory */
     private $unitFactory;
-    /** @var AttackerResolver */
+    /** @var AttackerResolverInterface */
     private $attackResolver;
     /** @var int */
     private const MAX_ROUNDS = 20;
+    /** @var ObserverInterface[] */
+    private $unitEventObservers = [];
 
     /**
-     * @param TurnService $turn
-     * @param UnitFactory $unitFactory
-     * @param AttackerResolver $attackResolver
+     * @param TurnServiceInterface      $turn
+     * @param UnitFactory               $unitFactory
+     * @param AttackerResolverInterface $attackResolver
      */
     public function __construct(
-        TurnService $turn,
+        TurnServiceInterface $turn,
         UnitFactory $unitFactory,
-        AttackerResolver $attackResolver
+        AttackerResolverInterface $attackResolver
     ) {
         $this->turn = $turn;
         $this->unitFactory = $unitFactory;
@@ -49,6 +55,7 @@ class GamePlayService implements SubjectInterface
 
         $firstAttacker = $this->attackResolver->resolveAttacker($wildBeast, $orderus);
         $firstDefender = $this->getDefender($wildBeast, $orderus, $firstAttacker);
+        $this->registerObserversForUnits($firstAttacker, $firstDefender);
 
         $this->notifyObservers(new GameStartedEvent(
             $firstAttacker->getName(),
@@ -70,6 +77,12 @@ class GamePlayService implements SubjectInterface
             $this->makeTurn($firstAttacker, $firstDefender, $turnNo);
             $turnNo++;
         }
+    }
+
+    public function register(ObserverInterface $observer): void
+    {
+        $this->unitEventObservers[] = $observer;
+        $this->registerObserver($observer);
     }
 
     private function willKeepFighting(UnitInterface $firstUnit, UnitInterface $secondUnit, int $turn): bool
@@ -132,5 +145,17 @@ class GamePlayService implements SubjectInterface
     private function getDefender(UnitInterface $u1, UnitInterface $u2, UnitInterface $attacker): UnitInterface
     {
         return $u1->isTheSameInstance($attacker) ? $u2 : $u1;
+    }
+
+    /**
+     * @param UnitInterface|Subject $firstAttacker
+     * @param UnitInterface|Subject $firstDefender
+     */
+    private function registerObserversForUnits(UnitInterface $firstAttacker, UnitInterface $firstDefender): void
+    {
+        foreach ($this->unitEventObservers as $ob) {
+            $firstDefender->register($ob);
+            $firstAttacker->register($ob);
+        }
     }
 }
