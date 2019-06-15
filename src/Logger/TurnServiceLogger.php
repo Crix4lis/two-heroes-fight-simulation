@@ -18,7 +18,7 @@ class TurnServiceLogger extends BaseLogger implements TurnServiceInterface
     public function __construct(
         TurnServiceInterface $service,
         MonoLogger $logger,
-        int $level = MonoLogger::ERROR,
+        int $level = MonoLogger::CRITICAL,
         string $logFilePath = BaseLogger::DEFAULT_FILE
     )
     {
@@ -37,13 +37,16 @@ class TurnServiceLogger extends BaseLogger implements TurnServiceInterface
         try {
             $this->service->make($attacker, $defender);
         } catch (LogicException $e) {
-            $msg = $e->getMessage();
+            $msg = sprintf(
+                'Attacker %s is dead! That must not happen. Make sure you didn\'t brake the application',
+                $attacker->getName()
+            );
             $att = var_export($attacker, true);
             $deff = var_export($defender, true);
 
-            $this->logger->error($msg);
-            $this->logger->error($att);
-            $this->logger->error($deff);
+            $this->logger->critical($msg);
+            $this->logger->critical('Attacker dump: ' . $att);
+            $this->logger->critical('Defender dump: ' . $deff);
             throw $e;
         }
     }
