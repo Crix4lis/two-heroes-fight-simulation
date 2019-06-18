@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Emagia\Event;
 
-use Emagia\ObserverPattern\Event;
+use Emagia\MediatorPattern\Event;
 use Emagia\Property\Defence;
 use Emagia\Property\HealthPoints;
 use Emagia\Property\Luck;
