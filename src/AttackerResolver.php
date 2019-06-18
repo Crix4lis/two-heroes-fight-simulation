@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Emagia;
 
+use Emagia\ObserverPattern\Subject;
 use Emagia\Unit\UnitInterface;
 
 class AttackerResolver implements AttackerResolverInterface

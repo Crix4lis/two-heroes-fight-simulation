@@ -8,13 +8,13 @@ use Emagia\Event\DefenderAlredyDeadEvent;
 use Emagia\Event\PerformedAttackEvent;
 use Emagia\Event\ReceivedDamageEvent;
 use Emagia\Event\UnitDiedEvent;
+use Emagia\ObserverPattern\Subject;
 use Emagia\ObserverPattern\SubjectInterface;
 use Emagia\Property\Defence;
 use Emagia\Property\HealthPoints;
 use Emagia\Property\Luck;
 use Emagia\Property\Speed;
 use Emagia\Property\Strength;
-use Emagia\Subject;
 
 final class Unit implements UnitInterface, SubjectInterface
 {

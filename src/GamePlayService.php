@@ -8,6 +8,7 @@ use Emagia\Event\GameFinishedWithWinner;
 use Emagia\Event\GameStartedEvent;
 use Emagia\Event\TurnStartsEvent;
 use Emagia\ObserverPattern\ObserverInterface;
+use Emagia\ObserverPattern\Subject;
 use Emagia\ObserverPattern\SubjectInterface;
 use Emagia\Unit\UnitFactory;
 use Emagia\Unit\UnitInterface;
