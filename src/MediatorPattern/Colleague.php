@@ -3,13 +3,18 @@ declare(strict_types=1);
 
 namespace Emagia\MediatorPattern;
 
-trait Colleague
+abstract class Colleague implements ColleagueInterface
 {
-    /** @var MediatorInterface */
-    private $mediator;
+    /** @var EventAndLogsMediatorInterface */
+    protected $mediator;
 
-    public function setMediatior(MediatorInterface $mediator): void
+    public function setMediatior(EventAndLogsMediatorInterface $mediator): void
     {
         $this->mediator = $mediator;
+    }
+
+    public function getMediator(): EventAndLogsMediatorInterface
+    {
+        return $this->mediator;
     }
 }

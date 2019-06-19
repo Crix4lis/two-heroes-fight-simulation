@@ -3,13 +3,14 @@ declare(strict_types=1);
 
 namespace Emagia\Unit;
 
+use Emagia\MediatorPattern\Colleague;
 use Emagia\Property\Defence;
 use Emagia\Property\HealthPoints;
 use Emagia\Property\Luck;
 use Emagia\Property\Speed;
 use Emagia\Property\Strength;
 
-final class Unit implements UnitInterface
+final class Unit extends Colleague implements UnitInterface
 {
     /** @var string */
     private $name;
@@ -43,11 +44,11 @@ final class Unit implements UnitInterface
     public function performAttack(UnitInterface $unitToAttack): void
     {
         if ($unitToAttack->getCurrentHealth()->getPoints() <= 0) {
-            //todo: already dead - event?
+            $this->mediator->throwDefenderAlreadyDeadEvent($this, $unitToAttack);
             return;
         }
 
-        //todo: event zaatakowano
+        $this->mediator->throwPerformedAttackEvent($this->name, $this->strength->getPoints());
         $unitToAttack->defendFromAttack($this->strength);
     }
 
@@ -55,7 +56,7 @@ final class Unit implements UnitInterface
     {
         $blocked = $this->defence->getPoints();
         $dmgToReceive = $attackStrength->getPoints() - $blocked;
-        //todo: event zablokowano $blocked;
+        $this->mediator->throwBlockedDamageEvent($this->name, $blocked);
 
         $this->receiveDamage(new HealthPoints($dmgToReceive));
     }
@@ -72,8 +73,12 @@ final class Unit implements UnitInterface
 
     public function receiveDamage(HealthPoints $receiveDamage): void
     {
-        //todo: event otrzymano
         $this->healthPoints = $this->healthPoints->subtract($receiveDamage);
+        $this->mediator->throwReceivedDamageEvent(
+            $this->name,
+            $receiveDamage->getPoints(),
+            $this->healthPoints->getPoints()
+        );
     }
 
     public function getDefense(): Defence

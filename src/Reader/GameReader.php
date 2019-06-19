@@ -14,9 +14,10 @@ use Emagia\Event\RapidStrikeUsedEvent;
 use Emagia\Event\ReceivedDamageEvent;
 use Emagia\Event\TurnStartsEvent;
 use Emagia\Event\UnitDiedEvent;
+use Emagia\MediatorPattern\Colleague;
 use Emagia\MediatorPattern\Event;
 
-class GameReader implements GameReaderInterface
+class GameReader extends Colleague implements GameReaderInterface
 {
     public function printEvent(Event $event): void
     {

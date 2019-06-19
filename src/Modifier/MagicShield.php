@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Emagia\Modifier;
 
+use Emagia\MediatorPattern\ColleagueInterface;
+use Emagia\MediatorPattern\EventAndLogsMediatorInterface;
 use Emagia\Property\Defence;
 use Emagia\Property\HealthPoints;
 use Emagia\Property\Luck;
@@ -18,9 +20,9 @@ use Emagia\Unit\UnitInterface;
  * @see Unit
  * Modifies defense ability
  */
-class MagicShield implements UnitInterface
+class MagicShield implements UnitInterface, ColleagueInterface
 {
-    /** @var UnitInterface */
+    /** @var UnitInterface|ColleagueInterface */
     private $unit;
     /** @var RandomizerInterface */
     private $randomizer;
@@ -41,12 +43,8 @@ class MagicShield implements UnitInterface
     public function defendFromAttack(Strength $attackStrength): void
     {
         $blocked = $this->unit->getDefense()->getPoints();
-        //todo: event zablokowano $blocked;
+        $this->unit->getMediator()->throwBlockedDamageEvent($this->unit->getName(), $blocked);
         $dmgToReceive = $attackStrength->getPoints() - $blocked;
-
-        if ($dmgToReceive < 0) {
-            $dmgToReceive = 0;
-        }
 
         $dmgToReceive = $this->useMagicShield(new HealthPoints($dmgToReceive));
         $this->receiveDamage($dmgToReceive);
@@ -58,7 +56,7 @@ class MagicShield implements UnitInterface
 
         if ($chance <= self::MAGIC_SHIELD_CHANCE) {
             $dmgToReceive = $dmgToReceive->reduceTimes(2);
-            //todo: event magic shield used and reduced dmg
+            $this->unit->getMediator()->throwMagicShieldUsedEvent($this->unit->getName(), $dmgToReceive->getPoints());
         }
 
         return $dmgToReceive;
@@ -112,5 +110,15 @@ class MagicShield implements UnitInterface
     public function getName(): string
     {
         return $this->unit->getName();
+    }
+
+    public function setMediatior(EventAndLogsMediatorInterface $mediator): void
+    {
+        $this->unit->setMediatior($mediator);
+    }
+
+    public function getMediator(): EventAndLogsMediatorInterface
+    {
+        return $this->unit->getMediator();
     }
 }

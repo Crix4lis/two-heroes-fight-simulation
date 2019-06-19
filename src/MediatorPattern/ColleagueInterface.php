@@ -5,5 +5,6 @@ namespace Emagia\MediatorPattern;
 
 interface ColleagueInterface
 {
-    public function setMediatior(MediatorInterface $mediator): void;
+    public function setMediatior(EventAndLogsMediatorInterface $mediator): void;
+    public function getMediator(): EventAndLogsMediatorInterface;
 }

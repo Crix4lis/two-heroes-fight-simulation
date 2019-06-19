@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Emagia\Modifier;
 
+use Emagia\MediatorPattern\ColleagueInterface;
+use Emagia\MediatorPattern\EventAndLogsMediatorInterface;
 use Emagia\Property\Defence;
 use Emagia\Property\HealthPoints;
 use Emagia\Property\Luck;
@@ -18,9 +20,9 @@ use Emagia\Unit\UnitInterface;
  * @see Unit
  * Modifies attack ability
  */
-class RapidStrike implements UnitInterface
+class RapidStrike implements UnitInterface, ColleagueInterface
 {
-    /** @var UnitInterface */
+    /** @var UnitInterface|ColleagueInterface */
     private $unit;
     /** @var RandomizerInterface */
     private $randomizer;
@@ -39,7 +41,7 @@ class RapidStrike implements UnitInterface
 
         // 10% chance
         if ($chance <= self::RAPID_STRIKE_CHANCE) {
-            //todo: event double attack
+            $this->unit->getMediator()->throwRapidStrikeUsedEvent($this->unit->getName());
             $this->unit->performAttack($unitToAttack);
         }
 
@@ -99,5 +101,15 @@ class RapidStrike implements UnitInterface
     public function getName(): string
     {
         return $this->unit->getName();
+    }
+
+    public function setMediatior(EventAndLogsMediatorInterface $mediator): void
+    {
+        $this->unit->setMediatior($mediator);
+    }
+
+    public function getMediator(): EventAndLogsMediatorInterface
+    {
+        return $this->unit->getMediator();
     }
 }
