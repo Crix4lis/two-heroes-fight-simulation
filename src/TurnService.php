@@ -4,14 +4,17 @@ declare(strict_types=1);
 namespace Emagia;
 
 use Emagia\MediatorPattern\Colleague;
+use Emagia\MediatorPattern\ColleagueInterface;
 use Emagia\Unit\UnitInterface;
 use LogicException;
 
 /**
  * Imitates domain service
  */
-class TurnService extends Colleague
+class TurnService implements ColleagueInterface
 {
+    use Colleague;
+
     public function make(UnitInterface $attacker, UnitInterface $defender): void
     {
         if (!$defender->isAlive()) {
@@ -19,7 +22,7 @@ class TurnService extends Colleague
         }
 
         if (!$attacker->isAlive()) {
-            $this->mediator->logCriticalAttackerIsDead($attacker, $defender);
+            $this->getMediator()->logCriticalAttackerIsDead($attacker, $defender);
             throw new LogicException('This should not happen!');
         }
 

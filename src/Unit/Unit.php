@@ -4,14 +4,17 @@ declare(strict_types=1);
 namespace Emagia\Unit;
 
 use Emagia\MediatorPattern\Colleague;
+use Emagia\MediatorPattern\ColleagueInterface;
 use Emagia\Property\Defence;
 use Emagia\Property\HealthPoints;
 use Emagia\Property\Luck;
 use Emagia\Property\Speed;
 use Emagia\Property\Strength;
 
-final class Unit extends Colleague implements UnitInterface
+final class Unit implements UnitInterface, ColleagueInterface
 {
+    use Colleague;
+
     /** @var string */
     private $name;
     private $healthPoints;
@@ -44,11 +47,11 @@ final class Unit extends Colleague implements UnitInterface
     public function performAttack(UnitInterface $unitToAttack): void
     {
         if ($unitToAttack->getCurrentHealth()->getPoints() <= 0) {
-            $this->mediator->throwDefenderAlreadyDeadEvent($this, $unitToAttack);
+            $this->getMediator()->throwDefenderAlreadyDeadEvent($this, $unitToAttack);
             return;
         }
 
-        $this->mediator->throwPerformedAttackEvent($this->name, $this->strength->getPoints());
+        $this->getMediator()->throwPerformedAttackEvent($this->name, $this->strength->getPoints());
         $unitToAttack->defendFromAttack($this->strength);
     }
 
@@ -56,7 +59,7 @@ final class Unit extends Colleague implements UnitInterface
     {
         $blocked = $this->defence->getPoints();
         $dmgToReceive = $attackStrength->getPoints() - $blocked;
-        $this->mediator->throwBlockedDamageEvent($this->name, $blocked);
+        $this->getMediator()->throwBlockedDamageEvent($this->name, $blocked);
 
         $this->receiveDamage(new HealthPoints($dmgToReceive));
     }
@@ -74,7 +77,7 @@ final class Unit extends Colleague implements UnitInterface
     public function receiveDamage(HealthPoints $receiveDamage): void
     {
         $this->healthPoints = $this->healthPoints->subtract($receiveDamage);
-        $this->mediator->throwReceivedDamageEvent(
+        $this->getMediator()->throwReceivedDamageEvent(
             $this->name,
             $receiveDamage->getPoints(),
             $this->healthPoints->getPoints()

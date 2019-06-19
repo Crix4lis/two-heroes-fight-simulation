@@ -24,41 +24,50 @@ use Emagia\Property\Strength;
 use Emagia\Reader\GameReaderInterface;
 use Emagia\Unit\UnitInterface;
 
-class EventAndLogsEventAndLogsMediator implements EventAndLogsMediatorInterface
+/**
+ * It looks like a facade and I guess facade would be enough in this use case because
+ * there is no need for bi-directional communication between Colleagues
+ */
+class EventAndLogsMediator implements EventAndLogsMediatorInterface
 {
-    /** GameReaderInterface */
-    private $gameReader;
     /** @var GameplayLoggerInterface */
     private $gameplayLogger;
+    /** @var GameReaderInterface */
+    private $gameplayReader;
     /** @var ErrorLoggerInterface */
     private $errorLogger;
 
     public function __construct(
-        GameReaderInterface $gameReader,
+        ColleagueInterface $firstUnit,
+        ColleagueInterface $secondUnit,
+        ColleagueInterface $attackerResolver,
+        ColleagueInterface $turnService,
         GameplayLoggerInterface $gameplayLogger,
+        GameReaderInterface $gameplayReader,
         ErrorLoggerInterface $errorLogger
     ) {
-        $this->gameReader = $gameReader;
-        $this->gameplayLogger = $gameplayLogger;
-        $this->errorLogger = $errorLogger;
+        $firstUnit->setMediator($this);
+        $secondUnit->setMediator($this);
+        $attackerResolver->setMediator($this);
+        $turnService->setMediator($this);
 
-        $this->gameReader->setMediatior($this);
-        $this->gameplayLogger->setMediatior($this);
-        $this->errorLogger->setMediatior($this);
+        $this->gameplayLogger = $gameplayLogger;
+        $this->gameplayReader = $gameplayReader;
+        $this->errorLogger = $errorLogger;
     }
 
     public function throwBlockedDamageEvent(string $defenderName, int $blockedDamage): void
     {
         $event = new BlockedDamageEvent($defenderName, $blockedDamage);
         $this->gameplayLogger->logEvent($event);
-        $this->gameReader->printEvent($event);
+        $this->gameplayReader->printEvent($event);
     }
 
     public function throwDefenderAlreadyDeadEvent(UnitInterface $attacker, UnitInterface $deadUnit): void
     {
         $event = new DefenderAlredyDeadEvent($attacker, $deadUnit);
         $this->gameplayLogger->logEvent($event);
-        $this->gameReader->printEvent($event);
+        $this->gameplayReader->printEvent($event);
     }
 
     public function throwGameFinishedWithoutWinnerEvent(
@@ -77,14 +86,14 @@ class EventAndLogsEventAndLogsMediator implements EventAndLogsMediatorInterface
             $turn
         );
         $this->gameplayLogger->logEvent($event);
-        $this->gameReader->printEvent($event);
+        $this->gameplayReader->printEvent($event);
     }
 
     public function throwGameFinishedWithWinner(string $winnerName, HealthPoints $winnerHp, int $turn): void
     {
         $event = new GameFinishedWithWinner($winnerName, $winnerHp, $turn);
         $this->gameplayLogger->logEvent($event);
-        $this->gameReader->printEvent($event);
+        $this->gameplayReader->printEvent($event);
     }
 
     public function throwGameStartedEvent(
@@ -119,49 +128,49 @@ class EventAndLogsEventAndLogsMediator implements EventAndLogsMediatorInterface
             $maxRounds
         );
         $this->gameplayLogger->logEvent($event);
-        $this->gameReader->printEvent($event);
+        $this->gameplayReader->printEvent($event);
     }
 
     public function throwMagicShieldUsedEvent(string $defenderName, int $damageReducedTo): void
     {
         $event = new MagicShieldUsedEvent($defenderName, $damageReducedTo);
         $this->gameplayLogger->logEvent($event);
-        $this->gameReader->printEvent($event);
+        $this->gameplayReader->printEvent($event);
     }
 
     public function throwPerformedAttackEvent(string $attackerName, int $attackDmg): void
     {
         $event = new PerformedAttackEvent($attackerName, $attackDmg);
         $this->gameplayLogger->logEvent($event);
-        $this->gameReader->printEvent($event);
+        $this->gameplayReader->printEvent($event);
     }
 
     public function throwRapidStrikeUsedEvent(string $attackerName): void
     {
         $event = new RapidStrikeUsedEvent($attackerName);
         $this->gameplayLogger->logEvent($event);
-        $this->gameReader->printEvent($event);
+        $this->gameplayReader->printEvent($event);
     }
 
     public function throwReceivedDamageEvent(string $defenderName, int $receivedDamage, int $defenderHpLeft): void
     {
         $event = new ReceivedDamageEvent($defenderName, $receivedDamage, $defenderHpLeft);
         $this->gameplayLogger->logEvent($event);
-        $this->gameReader->printEvent($event);
+        $this->gameplayReader->printEvent($event);
     }
 
     public function throwTurnStartsEvent(string $attackerName, string $defenderName, int $turn): void
     {
         $event = new TurnStartsEvent($attackerName, $defenderName, $turn);
         $this->gameplayLogger->logEvent($event);
-        $this->gameReader->printEvent($event);
+        $this->gameplayReader->printEvent($event);
     }
 
     public function throwUnitDiedEvent(string $unitName): void
     {
         $event = new UnitDiedEvent($unitName);
         $this->gameplayLogger->logEvent($event);
-        $this->gameReader->printEvent($event);
+        $this->gameplayReader->printEvent($event);
     }
 
     public function logErrorCannotResolveAttacker(): void

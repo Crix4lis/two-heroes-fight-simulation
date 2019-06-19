@@ -112,9 +112,9 @@ class MagicShield implements UnitInterface, ColleagueInterface
         return $this->unit->getName();
     }
 
-    public function setMediatior(EventAndLogsMediatorInterface $mediator): void
+    public function setMediator(EventAndLogsMediatorInterface $mediator): void
     {
-        $this->unit->setMediatior($mediator);
+        $this->unit->setMediator($mediator);
     }
 
     public function getMediator(): EventAndLogsMediatorInterface

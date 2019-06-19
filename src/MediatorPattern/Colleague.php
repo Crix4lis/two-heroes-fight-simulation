@@ -3,18 +3,26 @@ declare(strict_types=1);
 
 namespace Emagia\MediatorPattern;
 
-abstract class Colleague implements ColleagueInterface
+trait Colleague
 {
-    /** @var EventAndLogsMediatorInterface */
-    protected $mediator;
+    /** @var EventAndLogsMediatorInterface|null */
+    private $mediator;
 
-    public function setMediatior(EventAndLogsMediatorInterface $mediator): void
+    public function setMediator(EventAndLogsMediatorInterface $mediator): void
     {
+        if ($this->mediator !== null) {
+            throw new ColleagueException('Mediator is already set! Cannot override mediator!');
+        }
+
         $this->mediator = $mediator;
     }
 
     public function getMediator(): EventAndLogsMediatorInterface
     {
+        if ($this->mediator === null) {
+            throw new ColleagueException('Mediator is missing!');
+        }
+
         return $this->mediator;
     }
 }

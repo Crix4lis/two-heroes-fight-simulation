@@ -4,10 +4,13 @@ declare(strict_types=1);
 namespace Emagia;
 
 use Emagia\MediatorPattern\Colleague;
+use Emagia\MediatorPattern\ColleagueInterface;
 use Emagia\Unit\UnitInterface;
 
-class AttackerResolver extends Colleague
+class AttackerResolver implements ColleagueInterface
 {
+    use Colleague;
+
     public function resolveAttacker(UnitInterface $firstUnit, UnitInterface $secondUnit): UnitInterface
     {
         if (!$firstUnit->getSpeed()->isEqual($secondUnit->getSpeed())) {
@@ -18,7 +21,7 @@ class AttackerResolver extends Colleague
             return $this->getLuckiest($firstUnit, $secondUnit);
         }
 
-        $this->mediator->logErrorCannotResolveAttacker();
+        $this->getMediator()->logErrorCannotResolveAttacker();
         throw new AttackResolverException('Cannot resolve attacker! Both units have the same speed and luck');
     }
 
@@ -30,6 +33,5 @@ class AttackerResolver extends Colleague
     private function getLuckiest(UnitInterface $u1, UnitInterface $u2): UnitInterface
     {
         return $u1->getLuck()->isGreater($u2->getLuck()) ? $u1 : $u2;
-
     }
 }
