@@ -55,12 +55,12 @@ be declared.
  *Contains base solution (core functionality, unit tested) that does not support printig yet*
  - branch: [observer-pattern](https://github.com/Crix4lis/two-heroes-fight-simulation/tree/observer-pattern); tag: [running-app-observer-pattern](https://github.com/Crix4lis/two-heroes-fight-simulation/tree/running-app-observer-pattern):<br>
  *Contains all code from `base` branch and extends it with printing and logging with usage of Observer Pattern*
- - branch: [mediator-pattern](https://github.com/Crix4lis/two-heroes-fight-simulation/tree/mediator-pattern); tag: *--none-- Not finished yet*<br>
+ - branch: [mediator-pattern](https://github.com/Crix4lis/two-heroes-fight-simulation/tree/mediator-pattern); tag: [running-app-mediator-pattern](https://github.com/Crix4lis/two-heroes-fight-simulation/tree/running-app-mediator-pattern):<br>
  *Contains all code from `base` branch and extends it with printing and logging with usage of Mediator Pattern*
 
 More branches and approaches to be added...
  
-**Current branch:** [base](https://github.com/Crix4lis/two-heroes-fight-simulation/tree/base)
+**Current branch:** [observer-pattern](https://github.com/Crix4lis/two-heroes-fight-simulation/tree/observer-pattern)
 
 ## WORD OF EXPLANATION
 The easiest and most 'web app' solution would be to use some external or self made
