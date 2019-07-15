@@ -40,4 +40,9 @@ class HealthPoints implements PropertyPointsInterface
 
         return new HealthPoints((int) round($result, 0));
     }
+
+    public function __toString()
+    {
+        return (string)$this->health;
+    }
 }

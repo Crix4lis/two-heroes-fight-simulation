@@ -21,4 +21,9 @@ class Defence implements PropertyPointsInterface
     {
         return $this->defence;
     }
+
+    public function __toString()
+    {
+        return (string)$this->defence;
+    }
 }
