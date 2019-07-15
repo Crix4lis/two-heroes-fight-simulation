@@ -8,6 +8,11 @@ use Emagia\GamePlayService;
 use Emagia\MediatorFactory;
 use Emagia\MediatorPattern\ColleagueInterface;
 use Emagia\MediatorPattern\EventAndLogsMediatorInterface;
+use Emagia\Property\Defence;
+use Emagia\Property\HealthPoints;
+use Emagia\Property\Luck;
+use Emagia\Property\Speed;
+use Emagia\Property\Strength;
 use Emagia\TurnService;
 use Emagia\Unit\UnitFactory;
 use Emagia\Unit\UnitInterface;
@@ -43,6 +48,26 @@ class GamePlayServiceTest extends TestCase
      * @var \Emagia\MediatorPattern\EventAndLogsMediatorInterface|\Prophecy\Prophecy\ObjectProphecy
      */
     private $mediator;
+    /**
+     * @var \Emagia\Property\HealthPoints|\Prophecy\Prophecy\ObjectProphecy
+     */
+    private $hp;
+    /**
+     * @var \Emagia\Property\Strength|\Prophecy\Prophecy\ObjectProphecy
+     */
+    private $str;
+    /**
+     * @var \Emagia\Property\Defence|\Prophecy\Prophecy\ObjectProphecy
+     */
+    private $def;
+    /**
+     * @var \Emagia\Property\Speed|\Prophecy\Prophecy\ObjectProphecy
+     */
+    private $speed;
+    /**
+     * @var \Prophecy\Prophecy\ObjectProphecy
+     */
+    private $luck;
 
     public function setUp(): void
     {
@@ -53,6 +78,11 @@ class GamePlayServiceTest extends TestCase
         $this->orderus = $this->prophesize(UnitColleague::class);
         $this->mediatorFactory = $this->prophesize(MediatorFactory::class);
         $this->mediator = $this->prophesize(EventAndLogsMediatorInterface::class);
+        $this->hp = $this->prophesize(HealthPoints::class);
+        $this->str = $this->prophesize(Strength::class);
+        $this->def = $this->prophesize(Defence::class);
+        $this->speed = $this->prophesize(Speed::class);
+        $this->luck = $this->prophesize(Luck::class);
     }
 
     public function turnsDataProvider(): array
@@ -65,14 +95,14 @@ class GamePlayServiceTest extends TestCase
                 10
             ],
             '1 rounds' => [
-                [true, true],
-                [true, false],
+                [true, true, true],
+                [true, false, false],
                 1,
                 0
             ],
             '2 rounds' => [
-                [true, true, true],
-                [true, true, false],
+                [true, true, true, true],
+                [true, true, false, false],
                 1,
                 1
             ],
@@ -106,8 +136,23 @@ class GamePlayServiceTest extends TestCase
         int $turnBeastFirstTimes
     ): void
     {
+        $this->wildBeast->getName()->willReturn('beast');
+        $this->wildBeast->getCurrentHealth()->willReturn($this->hp->reveal());
+        $this->wildBeast->getAttackStrength()->willReturn($this->str->reveal());
+        $this->wildBeast->getDefense()->willReturn($this->def->reveal());
+        $this->wildBeast->getSpeed()->willReturn($this->speed->reveal());
+        $this->wildBeast->getLuck()->willReturn($this->luck->reveal());
+
         $this->wildBeast->isAlive()->willReturn(...$wildBeastAlive);
         $this->orderus->isAlive()->willReturn(...$orderuAlive);
+
+        $this->orderus->getName()->willReturn('orderus');
+        $this->orderus->getCurrentHealth()->willReturn($this->hp->reveal());
+        $this->orderus->getAttackStrength()->willReturn($this->str->reveal());
+        $this->orderus->getDefense()->willReturn($this->def->reveal());
+        $this->orderus->getSpeed()->willReturn($this->speed->reveal());
+        $this->orderus->getLuck()->willReturn($this->luck->reveal());
+
         $this->wildBeast->isTheSameInstance($this->orderus->reveal())->willReturn(false)->shouldBeCalled();
         $this->factory->createWildBeast()->willReturn($this->wildBeast->reveal());
         $this->factory->createOrderus()->willReturn($this->orderus->reveal());
@@ -117,12 +162,6 @@ class GamePlayServiceTest extends TestCase
             ->shouldBeCalledTimes($turnOrderusFirstTimes);
         $this->turn->make($this->wildBeast->reveal(), $this->orderus->reveal())
             ->shouldBeCalledTimes($turnBeastFirstTimes);
-        $this->mediatorFactory->createMediatorForColleagues(
-            $this->wildBeast->reveal(),
-            $this->orderus->reveal(),
-            $this->attackResolver->reveal(),
-            $this->turn->reveal()
-        )->willReturn($this->mediator->reveal());
 
         $gameplay = new GamePlayService(
             $this->turn->reveal(),
@@ -130,6 +169,15 @@ class GamePlayServiceTest extends TestCase
             $this->attackResolver->reveal(),
             $this->mediatorFactory->reveal()
         );
+
+        $gameplay->setMediator($this->mediator->reveal());
+        $this->mediatorFactory->createMediatorForColleagues(
+            $this->wildBeast->reveal(),
+            $this->orderus->reveal(),
+            $this->attackResolver->reveal(),
+            $this->turn->reveal(),
+            $gameplay
+        )->willReturn($this->mediator->reveal());
 
         $gameplay->startBattle();
     }
@@ -149,8 +197,23 @@ class GamePlayServiceTest extends TestCase
         int $turnOrderusFirstTimes
     ): void
     {
+        $this->wildBeast->getName()->willReturn('beast');
+        $this->wildBeast->getCurrentHealth()->willReturn($this->hp->reveal());
+        $this->wildBeast->getAttackStrength()->willReturn($this->str->reveal());
+        $this->wildBeast->getDefense()->willReturn($this->def->reveal());
+        $this->wildBeast->getSpeed()->willReturn($this->speed->reveal());
+        $this->wildBeast->getLuck()->willReturn($this->luck->reveal());
+
         $this->wildBeast->isAlive()->willReturn(...$wildBeastAlive);
         $this->orderus->isAlive()->willReturn(...$orderuAlive);
+
+        $this->orderus->getName()->willReturn('orderus');
+        $this->orderus->getCurrentHealth()->willReturn($this->hp->reveal());
+        $this->orderus->getAttackStrength()->willReturn($this->str->reveal());
+        $this->orderus->getDefense()->willReturn($this->def->reveal());
+        $this->orderus->getSpeed()->willReturn($this->speed->reveal());
+        $this->orderus->getLuck()->willReturn($this->luck->reveal());
+
         $this->wildBeast->isTheSameInstance($this->wildBeast->reveal())->willReturn(true)->shouldBeCalled();
         $this->factory->createWildBeast()->willReturn($this->wildBeast->reveal());
         $this->factory->createOrderus()->willReturn($this->orderus->reveal());
@@ -160,12 +223,6 @@ class GamePlayServiceTest extends TestCase
             ->shouldBeCalledTimes($turnBeastFirstTimes);
         $this->turn->make($this->orderus->reveal(), $this->wildBeast->reveal())
             ->shouldBeCalledTimes($turnOrderusFirstTimes);
-        $this->mediatorFactory->createMediatorForColleagues(
-            $this->wildBeast->reveal(),
-            $this->orderus->reveal(),
-            $this->attackResolver->reveal(),
-            $this->turn->reveal()
-        )->willReturn($this->mediator->reveal());
 
         $gameplay = new GamePlayService(
             $this->turn->reveal(),
@@ -173,6 +230,15 @@ class GamePlayServiceTest extends TestCase
             $this->attackResolver->reveal(),
             $this->mediatorFactory->reveal()
         );
+
+        $gameplay->setMediator($this->mediator->reveal());
+        $this->mediatorFactory->createMediatorForColleagues(
+            $this->wildBeast->reveal(),
+            $this->orderus->reveal(),
+            $this->attackResolver->reveal(),
+            $this->turn->reveal(),
+            $gameplay
+        )->willReturn($this->mediator->reveal());
 
         $gameplay->startBattle();
     }
