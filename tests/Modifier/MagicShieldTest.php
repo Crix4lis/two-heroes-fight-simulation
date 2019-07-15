@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Test\Emagia\Modifier;
 
+use Emagia\MediatorPattern\EventAndLogsMediatorInterface;
 use Emagia\Modifier\MagicShield;
 use Emagia\Property\Defence;
 use Emagia\Property\HealthPoints;
@@ -39,6 +40,10 @@ class MagicShieldTest extends TestCase
      * @var \Emagia\Randomizer\RandomizerInterface|\Prophecy\Prophecy\ObjectProphecy
      */
     private $randomizer;
+    /**
+     * @var \Emagia\MediatorPattern\EventAndLogsMediatorInterface|\Prophecy\Prophecy\ObjectProphecy
+     */
+    private $mediator;
 
     public function setUp(): void
     {
@@ -48,6 +53,7 @@ class MagicShieldTest extends TestCase
         $this->speed = $this->prophesize(Speed::class);
         $this->luck = $this->prophesize(Luck::class);
         $this->randomizer = $this->prophesize(RandomizerInterface::class);
+        $this->mediator = $this->prophesize(EventAndLogsMediatorInterface::class);
     }
 
     public function unitsStatsForMagicShieldUsageDataProvider(): array
@@ -104,6 +110,7 @@ class MagicShieldTest extends TestCase
             $this->speed->reveal(),
             $this->luck->reveal()
         );
+        $attacker->setMediator($this->mediator->reveal());
 
         $defender = new MagicShield(new Unit(
             'name',
@@ -113,6 +120,7 @@ class MagicShieldTest extends TestCase
             $this->speed->reveal(),
             $this->luck->reveal()
         ), $this->randomizer->reveal());
+        $defender->setMediator($this->mediator->reveal());
 
         $attacker->performAttack($defender);
 
@@ -150,6 +158,7 @@ class MagicShieldTest extends TestCase
             $this->speed->reveal(),
             $this->luck->reveal()
         );
+        $attacker->setMediator($this->mediator->reveal());
 
         $defender = new MagicShield(new Unit(
             'name',
@@ -159,6 +168,7 @@ class MagicShieldTest extends TestCase
             $this->speed->reveal(),
             $this->luck->reveal()
         ), $this->randomizer->reveal());
+        $defender->setMediator($this->mediator->reveal());
 
         $attacker->performAttack($defender);
 

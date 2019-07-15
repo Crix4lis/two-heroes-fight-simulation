@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Emagia\Unit;
 
+use Emagia\MediatorPattern\ColleagueInterface;
 use Emagia\Modifier\MagicShield;
 use Emagia\Modifier\RapidStrike;
 use Emagia\Property\Defence;
@@ -22,6 +23,9 @@ class UnitFactory
         $this->randomizer = $randomizer;
     }
 
+    /**
+     * @return UnitInterface|ColleagueInterface
+     */
     public function createWildBeast(): UnitInterface
     {
         $hp = new HealthPoints($this->randomizer->randomize(60, 90));
@@ -33,6 +37,9 @@ class UnitFactory
         return new Unit('Wild Beast', $hp, $strength, $defence, $speed, $luck);
     }
 
+    /**
+     * @return UnitInterface|ColleagueInterface
+     */
     public function createOrderus(): UnitInterface
     {
         $hp = new HealthPoints($this->randomizer->randomize(70, 90));

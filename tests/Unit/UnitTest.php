@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Test\Emagia\Unit;
 
+use Emagia\MediatorPattern\EventAndLogsMediatorInterface;
 use Emagia\Property\Defence;
 use Emagia\Property\HealthPoints;
 use Emagia\Property\Luck;
@@ -33,6 +34,10 @@ class UnitTest extends TestCase
      * @var \Emagia\Property\Luck|\Prophecy\Prophecy\ObjectProphecy
      */
     private $luck;
+    /**
+     * @var \Emagia\MediatorPattern\EventAndLogsMediatorInterface|\Prophecy\Prophecy\ObjectProphecy
+     */
+    private $mediator;
 
     public function setUp(): void
     {
@@ -41,6 +46,7 @@ class UnitTest extends TestCase
         $this->healthPoints = $this->prophesize(HealthPoints::class);
         $this->speed = $this->prophesize(Speed::class);
         $this->luck = $this->prophesize(Luck::class);
+        $this->mediator = $this->prophesize(EventAndLogsMediatorInterface::class);
     }
 
     public function unitsStatsDataProvider(): array
@@ -83,6 +89,7 @@ class UnitTest extends TestCase
             $this->speed->reveal(),
             $this->luck->reveal()
         );
+        $attacker->setMediator($this->mediator->reveal());
 
         $defender = new Unit(
             'name',
@@ -92,6 +99,7 @@ class UnitTest extends TestCase
             $this->speed->reveal(),
             $this->luck->reveal()
         );
+        $defender->setMediator($this->mediator->reveal());
 
         $attacker->performAttack($defender);
 

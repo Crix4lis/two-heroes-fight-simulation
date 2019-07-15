@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Test\Emagia;
 
+use Emagia\MediatorPattern\EventAndLogsMediatorInterface;
 use Emagia\TurnService;
 use Emagia\Unit\UnitInterface;
 use LogicException;
@@ -18,11 +19,16 @@ class TurnServiceTest extends TestCase
      * @var \Emagia\Unit\UnitInterface|\Prophecy\Prophecy\ObjectProphecy
      */
     private $defender;
+    /**
+     * @var \Emagia\MediatorPattern\EventAndLogsMediatorInterface|\Prophecy\Prophecy\ObjectProphecy
+     */
+    private $mediator;
 
     public function setUp(): void
     {
         $this->attacker = $this->prophesize(UnitInterface::class);
         $this->defender = $this->prophesize(UnitInterface::class);
+        $this->mediator = $this->prophesize(EventAndLogsMediatorInterface::class);
     }
 
     public function testAttacksDefender(): void
@@ -32,6 +38,7 @@ class TurnServiceTest extends TestCase
         $this->attacker->performAttack($this->defender->reveal())->shouldBeCalled(); //shouldBeCalled is an assertion
 
         $turn = new TurnService();
+        $turn->setMediator($this->mediator->reveal());
         $turn->make($this->attacker->reveal(), $this->defender->reveal());
     }
 
@@ -42,6 +49,7 @@ class TurnServiceTest extends TestCase
         $this->attacker->performAttack($this->defender->reveal())->shouldNotBeCalled(); //shouldBeCalled is an assertion
 
         $turn = new TurnService();
+        $turn->setMediator($this->mediator->reveal());
         $turn->make($this->attacker->reveal(), $this->defender->reveal());
     }
 
@@ -53,6 +61,7 @@ class TurnServiceTest extends TestCase
         $this->attacker->performAttack($this->defender->reveal())->shouldNotBeCalled(); //shouldBeCalled is an assertion
 
         $turn = new TurnService();
+        $turn->setMediator($this->mediator->reveal());
         $turn->make($this->attacker->reveal(), $this->defender->reveal());
     }
 }

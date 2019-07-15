@@ -5,6 +5,7 @@ namespace Test\Emagia;
 
 use Emagia\AttackerResolver;
 use Emagia\AttackResolverException;
+use Emagia\MediatorPattern\EventAndLogsMediatorInterface;
 use Emagia\Property\Luck;
 use Emagia\Property\Speed;
 use Emagia\Unit\UnitInterface;
@@ -29,6 +30,10 @@ class AttackResolverTest extends TestCase
      * @var \Emagia\Unit\UnitInterface|\Prophecy\Prophecy\ObjectProphecy
      */
     private $firstUnit;
+    /**
+     * @var \Emagia\MediatorPattern\EventAndLogsMediatorInterface|\Prophecy\Prophecy\ObjectProphecy
+     */
+    private $mediator;
 
     public function setUp(): void
     {
@@ -36,6 +41,7 @@ class AttackResolverTest extends TestCase
         $this->secondUnit = $this->prophesize(UnitInterface::class);
         $this->speed = $this->prophesize(Speed::class);
         $this->luck = $this->prophesize(Luck::class);
+        $this->mediator = $this->prophesize(EventAndLogsMediatorInterface::class);
     }
 
     public function unitsPropertiesForFirstUnitAsAttackerProvider(): array
@@ -75,6 +81,7 @@ class AttackResolverTest extends TestCase
         $this->luck->isGreater($this->luck)->willReturn($luckGreater)->shouldBeCalledTimes($timesLuckIsGreater);
 
         $resolver = new AttackerResolver();
+        $resolver->setMediator($this->mediator->reveal());
         $attacker = $resolver->resolveAttacker($this->firstUnit->reveal(), $this->secondUnit->reveal());
 
         $this->assertEquals(get_class($this->firstUnit->reveal()), get_class($attacker));
@@ -117,6 +124,7 @@ class AttackResolverTest extends TestCase
         $this->luck->isGreater($this->luck)->willReturn($luckGreater)->shouldBeCalledTimes($timesLuckIsGreater);
 
         $resolver = new AttackerResolver();
+        $resolver->setMediator($this->mediator->reveal());
         $attacker = $resolver->resolveAttacker($this->firstUnit->reveal(), $this->secondUnit->reveal());
 
         $this->assertEquals(get_class($this->secondUnit->reveal()), get_class($attacker));
@@ -136,6 +144,7 @@ class AttackResolverTest extends TestCase
         $this->luck->isGreater($this->luck)->shouldNotBeCalled();
 
         $resolver = new AttackerResolver();
+        $resolver->setMediator($this->mediator->reveal());
         $resolver->resolveAttacker($this->firstUnit->reveal(), $this->secondUnit->reveal());
     }
 }

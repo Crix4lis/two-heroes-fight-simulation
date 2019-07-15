@@ -17,20 +17,25 @@ class GamePlayService
     private $unitFactory;
     /** @var AttackerResolver */
     private $attackResolver;
+    /** @var MediatorFactory */
+    private $mediatorFactory;
 
     /**
-     * @param TurnService $turn
-     * @param UnitFactory $unitFactory
+     * @param TurnService      $turn
+     * @param UnitFactory      $unitFactory
      * @param AttackerResolver $attackResolver
+     * @param MediatorFactory  $mediatorFactory
      */
     public function __construct(
         TurnService $turn,
         UnitFactory $unitFactory,
-        AttackerResolver $attackResolver
+        AttackerResolver $attackResolver,
+        MediatorFactory $mediatorFactory
     ) {
         $this->turn = $turn;
         $this->unitFactory = $unitFactory;
         $this->attackResolver = $attackResolver;
+        $this->mediatorFactory = $mediatorFactory;
     }
 
     public function startBattle(): void
@@ -38,6 +43,12 @@ class GamePlayService
         $turnNo = 1;
         $wildBeast = $this->unitFactory->createWildBeast();
         $orderus = $this->unitFactory->createOrderus();
+        $this->mediatorFactory->createMediatorForColleagues(
+            $wildBeast,
+            $orderus,
+            $this->attackResolver,
+            $this->turn
+        );
 
         $firstAttacker = $this->attackResolver->resolveAttacker($wildBeast, $orderus);
         $firstDefender = $this->getDefender($wildBeast, $orderus, $firstAttacker);

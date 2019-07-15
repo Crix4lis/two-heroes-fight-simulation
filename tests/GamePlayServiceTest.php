@@ -5,6 +5,9 @@ namespace Test\Emagia;
 
 use Emagia\AttackerResolver;
 use Emagia\GamePlayService;
+use Emagia\MediatorFactory;
+use Emagia\MediatorPattern\ColleagueInterface;
+use Emagia\MediatorPattern\EventAndLogsMediatorInterface;
 use Emagia\TurnService;
 use Emagia\Unit\UnitFactory;
 use Emagia\Unit\UnitInterface;
@@ -32,14 +35,24 @@ class GamePlayServiceTest extends TestCase
      * @var \Emagia\Unit\UnitInterface|\Prophecy\Prophecy\ObjectProphecy
      */
     private $wildBeast;
+    /**
+     * @var \Emagia\MediatorFactory|\Prophecy\Prophecy\ObjectProphecy
+     */
+    private $mediatorFactory;
+    /**
+     * @var \Emagia\MediatorPattern\EventAndLogsMediatorInterface|\Prophecy\Prophecy\ObjectProphecy
+     */
+    private $mediator;
 
     public function setUp(): void
     {
         $this->factory = $this->prophesize(UnitFactory::class);
         $this->attackResolver = $this->prophesize(AttackerResolver::class);
         $this->turn = $this->prophesize(TurnService::class);
-        $this->wildBeast = $this->prophesize(UnitInterface::class);
-        $this->orderus = $this->prophesize(UnitInterface::class);
+        $this->wildBeast = $this->prophesize(UnitColleague::class);
+        $this->orderus = $this->prophesize(UnitColleague::class);
+        $this->mediatorFactory = $this->prophesize(MediatorFactory::class);
+        $this->mediator = $this->prophesize(EventAndLogsMediatorInterface::class);
     }
 
     public function turnsDataProvider(): array
@@ -104,11 +117,18 @@ class GamePlayServiceTest extends TestCase
             ->shouldBeCalledTimes($turnOrderusFirstTimes);
         $this->turn->make($this->wildBeast->reveal(), $this->orderus->reveal())
             ->shouldBeCalledTimes($turnBeastFirstTimes);
+        $this->mediatorFactory->createMediatorForColleagues(
+            $this->wildBeast->reveal(),
+            $this->orderus->reveal(),
+            $this->attackResolver->reveal(),
+            $this->turn->reveal()
+        )->willReturn($this->mediator->reveal());
 
         $gameplay = new GamePlayService(
             $this->turn->reveal(),
             $this->factory->reveal(),
-            $this->attackResolver->reveal()
+            $this->attackResolver->reveal(),
+            $this->mediatorFactory->reveal()
         );
 
         $gameplay->startBattle();
@@ -140,13 +160,24 @@ class GamePlayServiceTest extends TestCase
             ->shouldBeCalledTimes($turnBeastFirstTimes);
         $this->turn->make($this->orderus->reveal(), $this->wildBeast->reveal())
             ->shouldBeCalledTimes($turnOrderusFirstTimes);
+        $this->mediatorFactory->createMediatorForColleagues(
+            $this->wildBeast->reveal(),
+            $this->orderus->reveal(),
+            $this->attackResolver->reveal(),
+            $this->turn->reveal()
+        )->willReturn($this->mediator->reveal());
 
         $gameplay = new GamePlayService(
             $this->turn->reveal(),
             $this->factory->reveal(),
-            $this->attackResolver->reveal()
+            $this->attackResolver->reveal(),
+            $this->mediatorFactory->reveal()
         );
 
         $gameplay->startBattle();
     }
+}
+
+abstract class UnitColleague implements UnitInterface, ColleagueInterface
+{
 }
