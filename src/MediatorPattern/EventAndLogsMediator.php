@@ -42,6 +42,7 @@ class EventAndLogsMediator implements EventAndLogsMediatorInterface
         ColleagueInterface $secondUnit,
         ColleagueInterface $attackerResolver,
         ColleagueInterface $turnService,
+        ColleagueInterface $gameplayService,
         GameplayLoggerInterface $gameplayLogger,
         GameReaderInterface $gameplayReader,
         ErrorLoggerInterface $errorLogger
@@ -50,6 +51,7 @@ class EventAndLogsMediator implements EventAndLogsMediatorInterface
         $secondUnit->setMediator($this);
         $attackerResolver->setMediator($this);
         $turnService->setMediator($this);
+        $gameplayService->setMediator($this);
 
         $this->gameplayLogger = $gameplayLogger;
         $this->gameplayReader = $gameplayReader;

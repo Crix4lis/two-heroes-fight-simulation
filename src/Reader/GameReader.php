@@ -21,7 +21,11 @@ class GameReader implements GameReaderInterface
     public function printEvent(Event $event): void
     {
         if ($event instanceof BlockedDamageEvent) {
-            printf("%s blocked %s damage\n", ucfirst($event->getDefenderName()), $event->getDamage()->getPoints());
+            printf(
+                "%s blocked %s damage\n",
+                ucfirst($event->getDefenderName()),
+                $event->getDamage()->getPoints()
+            );
         }
 
         if ($event instanceof DefenderAlredyDeadEvent) {
@@ -30,7 +34,7 @@ class GameReader implements GameReaderInterface
 
         if ($event instanceof GameFinishedWithoutWinnerEvent) {
             printf(
-                    "\n\n***** GAME OVER! *****\nNoone has won! %s has %s hp left. %s has %s hp left.\n",
+                    "\n***** GAME OVER! *****\nNoone has won! %s has %s hp left. %s has %s hp left.\n",
                 ucfirst($event->getFirstUnitName()),
                 $event->getFirstUnitHp()->getPoints(),
                 ucfirst($event->getSecondUnitName()),
@@ -40,7 +44,7 @@ class GameReader implements GameReaderInterface
 
         if ($event instanceof GameFinishedWithWinner) {
             printf(
-                "\n\n***** GAME OVER! *****\nWinner is: %s! %s has %s hp left\n",
+                "\n***** GAME OVER! *****\nWinner is: %s! %s has %s hp left\n",
                 strtoupper($event->getWinnerName()),
                 ucfirst($event->getWinnerName()),
                 $event->getWinnerHp()
@@ -109,7 +113,7 @@ class GameReader implements GameReaderInterface
 
         if ($event instanceof ReceivedDamageEvent) {
             printf(
-                "%s receives %s damage. %s hp left.\n",
+                "%s receives %s damage. %s hp left.\n\n",
                 ucfirst($event->getDefenderName()),
                 $event->getReceivedDamage(),
                 $event->getDefenderHpLeft()

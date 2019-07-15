@@ -33,7 +33,8 @@ class MediatorFactory
         ColleagueInterface $firstUnit,
         ColleagueInterface $secondUnit,
         ColleagueInterface $attackerResolver,
-        ColleagueInterface $turnService
+        ColleagueInterface $turnService,
+        ColleagueInterface $gamePlaySerive
     ): EventAndLogsMediatorInterface
     {
         return new EventAndLogsMediator(
@@ -41,6 +42,7 @@ class MediatorFactory
             $secondUnit,
             $attackerResolver,
             $turnService,
+            $gamePlaySerive,
             $this->gameplayLogger,
             $this->gameplayReader,
             $this->errorLogger
